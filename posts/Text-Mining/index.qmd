@@ -4,6 +4,7 @@ author: "Sabrina Michl"
 date: "2023-01-25"
 categories: [code, analysis]
 bibliography: ref.bib
+image: image.jpg
 ---
 
 # Vorbemerkung
