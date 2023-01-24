@@ -1,5 +1,5 @@
 ---
-title: "Data_Science_Blog"
+title: "Text Mining for AWM"
 listing:
   contents: posts
   sort: "date desc"
@@ -9,4 +9,7 @@ listing:
   filter-ui: false
 page-layout: full
 title-block-banner: true
+bibliography: ref.bib
 ---
+
+@wiegand2019germeval

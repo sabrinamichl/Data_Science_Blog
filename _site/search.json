@@ -9,9 +9,9 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Data_Science_Blog",
+    "title": "Text Mining for AWM",
     "section": "",
-    "text": "Post With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 24, 2023\n\n\nHarlow Malloc\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nJan 21, 2023\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+    "text": "Michael (2019)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTEST-SEITE\n\n\n\n\n\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 25, 2023\n\n\nSabrina Michl\n\n\n\n\n\n\n  \n\n\n\n\nPost With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 24, 2023\n\n\nHarlow Malloc\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nJan 21, 2023\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items\n\nReferences\n\nMichael, Wiegand. 2019. GermEval-2018 Corpus (DE). heiDATA, V1. https://doi.org/10.11588/data/0B5VML."
   },
   {
     "objectID": "posts/post-with-code/index.html",
@@ -26,5 +26,12 @@
     "title": "Welcome To My Blog",
     "section": "",
     "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
+  },
+  {
+    "objectID": "posts/Text-Mining/index.html",
+    "href": "posts/Text-Mining/index.html",
+    "title": "TEST-SEITE",
+    "section": "",
+    "text": "Ich zitere hier (wiegand?)"
   }
 ]
