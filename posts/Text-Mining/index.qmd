@@ -14,7 +14,7 @@ Außerdem werden wordembeddings von @grave2018learning verwendet. Diese Daten si
 
 # 2. Pakete laden
 
-```{r messge=FALSE, results='hide'}
+```{r message=FALSE, results='hide'}
 library(tidyverse)
 library(rio)
 library(tidymodels) #model, recipe, workflow
