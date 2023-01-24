@@ -6,7 +6,13 @@ categories: [code, analysis]
 bibliography: ref.bib
 ---
 
-# 1. Pakete laden
+# Vorbemerkung
+
+Es werden zur Auswertung die Daten von @wiegand2019germeval verwendet. Diese Daten sind nach CC-BY-4.0 lizensiert.
+
+Außerdem werden wordembeddings von @grave2018learning verwendet. Diese Daten sind nach Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0) lizensiert.
+
+# 2. Pakete laden
 
 ```{r}
 library(tidyverse)
@@ -23,12 +29,12 @@ library(remoji)  # Emojis
 library(tokenizers)  # Vektoren tokenisieren
 ```
 
-# 2. Datensatz laden & kleine Änderungen vornehhmen
+# 3. Datensatz laden & kleine Änderungen vornehhmen
 
 ## Trainingsdatensatz
 
 ```{r}
-d_train <- read_tsv("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/posts/Text-Mining/germeval2018.training.txt", col_names = FALSE)
+d_train <- read_tsv("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.training.txt", col_names = FALSE)
 ```
 
 ### Spalten umbenennen
@@ -48,7 +54,7 @@ d_train <- d_train %>%
 ## Testdatensatz
 
 ```{r}
-d_test <- read_tsv("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/posts/Text-Mining/germeval2018.test.txt", col_names = FALSE)
+d_test <- read_tsv("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.test.txt", col_names = FALSE)
 ```
 
 ### Spalten umbenennen

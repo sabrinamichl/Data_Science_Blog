@@ -85,6 +85,25 @@ code span.st { color: #4070a0; } /* String */
 code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
 </style>
 
 
@@ -207,8 +226,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
+<section id="vorbemerkung" class="level1">
+<h1>Vorbemerkung</h1>
+<p>Es werden zur Auswertung die Daten von <span class="citation" data-cites="wiegand2019germeval">Michael (<a href="#ref-wiegand2019germeval" role="doc-biblioref">2019</a>)</span> verwendet. Diese Daten sind nach CC-BY-4.0 lizensiert.</p>
+<p>Außerdem werden wordembeddings von <span class="citation" data-cites="grave2018learning">Grave et al. (<a href="#ref-grave2018learning" role="doc-biblioref">2018</a>)</span> verwendet. Diese Daten sind nach Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0) lizensiert.</p>
+</section>
 <section id="pakete-laden" class="level1">
-<h1>1. Pakete laden</h1>
+<h1>2. Pakete laden</h1>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -308,7 +332,7 @@ x recipes::fixed()  masks stringr::fixed()
 x dplyr::lag()      masks stats::lag()
 x yardstick::spec() masks readr::spec()
 x recipes::step()   masks stats::step()
-* Learn how to get started at https://www.tidymodels.org/start/</code></pre>
+* Search for functions across packages at https://www.tidymodels.org/find/</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidytext)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -357,11 +381,11 @@ Das folgende Objekt ist maskiert 'package:dials':
 </div>
 </section>
 <section id="datensatz-laden-kleine-änderungen-vornehhmen" class="level1">
-<h1>2. Datensatz laden &amp; kleine Änderungen vornehhmen</h1>
+<h1>3. Datensatz laden &amp; kleine Änderungen vornehhmen</h1>
 <section id="trainingsdatensatz" class="level2">
 <h2 class="anchored" data-anchor-id="trainingsdatensatz">Trainingsdatensatz</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>d_train <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/posts/Text-Mining/germeval2018.training.txt"</span>, <span class="at">col_names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>d_train <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.training.txt"</span>, <span class="at">col_names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 5009 Columns: 3
 -- Column specification --------------------------------------------------------
@@ -390,7 +414,7 @@ i Specify the column types or set `show_col_types = FALSE` to quiet this message
 <section id="testdatensatz" class="level2">
 <h2 class="anchored" data-anchor-id="testdatensatz">Testdatensatz</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>d_test <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/posts/Text-Mining/germeval2018.test.txt"</span>, <span class="at">col_names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>d_test <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.test.txt"</span>, <span class="at">col_names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 2228 Columns: 3
 -- Column specification --------------------------------------------------------
@@ -418,12 +442,20 @@ i Specify the column types or set `show_col_types = FALSE` to quiet this message
 </section>
 </section>
 <section id="section" class="level1">
-<h1></h1>
+
+
 
 
 </section>
 
-</main> <!-- /main -->
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-grave2018learning" class="csl-entry" role="doc-biblioentry">
+Grave, Edouard, Piotr Bojanowski, Prakhar Gupta, Armand Joulin, and Tomas Mikolov. 2018. <span>“Learning Word Vectors for 157 Languages.”</span> In <em>Proceedings of the International Conference on Language Resources and Evaluation (LREC 2018)</em>.
+</div>
+<div id="ref-wiegand2019germeval" class="csl-entry" role="doc-biblioentry">
+Michael, Wiegand. 2019. <em>GermEval-2018 Corpus (DE)</em>. heiDATA, V1. <a href="https://doi.org/10.11588/data/0B5VML">https://doi.org/10.11588/data/0B5VML</a>.
+</div>
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
