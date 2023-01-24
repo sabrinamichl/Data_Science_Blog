@@ -8,13 +8,13 @@ bibliography: ref.bib
 
 # Vorbemerkung
 
-Es werden zur Auswertung die Daten von @wiegand2019germeval verwendet. Diese Daten sind nach CC-BY-4.0 lizensiert.
+Es werden zur Auswertung die Daten von @wiegand2019germeval verwendet. Diese Daten sind nach Attribution 4.0 International (CC-BY-4.0) lizensiert.
 
 Außerdem werden wordembeddings von @grave2018learning verwendet. Diese Daten sind nach Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0) lizensiert.
 
 # 2. Pakete laden
 
-```{r message=FALSE, results='hide'}
+```{r output=FALSE}
 library(tidyverse)
 library(rio)
 library(tidymodels) #model, recipe, workflow

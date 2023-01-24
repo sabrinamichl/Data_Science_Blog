@@ -32,7 +32,7 @@
     "href": "posts/Text-Mining/index.html",
     "title": "Datenauswertung",
     "section": "",
-    "text": "Es werden zur Auswertung die Daten von Michael (2019) verwendet. Diese Daten sind nach CC-BY-4.0 lizensiert.\nAußerdem werden wordembeddings von Grave et al. (2018) verwendet. Diese Daten sind nach Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0) lizensiert."
+    "text": "Es werden zur Auswertung die Daten von Michael (2019) verwendet. Diese Daten sind nach Attribution 4.0 International (CC-BY-4.0) lizensiert.\nAußerdem werden wordembeddings von Grave et al. (2018) verwendet. Diese Daten sind nach Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0) lizensiert."
   },
   {
     "objectID": "posts/Text-Mining/index.html#trainingsdatensatz",
