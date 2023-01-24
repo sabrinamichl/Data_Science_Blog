@@ -1,9 +1,68 @@
 ---
-title: "TEST-SEITE"
+title: "Datenauswertung "
 author: "Sabrina Michl"
 date: "2023-01-25"
 categories: [code, analysis]
 bibliography: ref.bib
 ---
 
-@wiegand2019germeval
+# 1. Pakete laden
+
+```{r}
+library(tidyverse)
+library(rio)
+library(tidymodels) #model, recipe, workflow
+library(tidytext)
+library(textrecipes)
+library(lsa)  # stopwords
+library(discrim)  # naive bayes classification
+library(naivebayes)
+library(tictoc)  # Zeitmessung
+library(fastrtext)  # Worteinbettungen
+library(remoji)  # Emojis
+library(tokenizers)  # Vektoren tokenisieren
+```
+
+# 2. Datensatz laden & kleine Änderungen vornehhmen
+
+## Trainingsdatensatz
+
+```{r}
+d_train <- read_tsv("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/posts/Text-Mining/germeval2018.training.txt", col_names = FALSE)
+```
+
+### Spalten umbenennen
+
+```{r}
+names(d_train) <- c("text", "c1", "c2")
+```
+
+### ID-Spalte einfügen
+
+```{r}
+d_train <- d_train %>% 
+  mutate(id = row_number()) %>% 
+  select(id, everything())
+```
+
+## Testdatensatz
+
+```{r}
+d_test <- read_tsv("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/posts/Text-Mining/germeval2018.test.txt", col_names = FALSE)
+```
+
+### Spalten umbenennen
+
+```{r}
+names(d_test) <- c("text", "c1", "c2")
+```
+
+### ID-Spalte einfügen
+
+```{r}
+d_test <- d_test %>% 
+  mutate(id = row_number()) %>% 
+  select(id, everything())
+```
+
+# 
