@@ -332,7 +332,7 @@ x recipes::fixed()  masks stringr::fixed()
 x dplyr::lag()      masks stats::lag()
 x yardstick::spec() masks readr::spec()
 x recipes::step()   masks stats::step()
-* Search for functions across packages at https://www.tidymodels.org/find/</code></pre>
+* Use suppressPackageStartupMessages() to eliminate package startup messages</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidytext)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
