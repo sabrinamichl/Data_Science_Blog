@@ -1,6 +1,6 @@
 ---
 title: "About Sabrina"
-image: michl.jpg
+image: michl2.jpg
 about:
   template: jolla
   links:
