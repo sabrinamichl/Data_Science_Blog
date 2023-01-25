@@ -32,7 +32,7 @@
     "href": "posts/Text-Mining/index.html",
     "title": "Datenauswertung",
     "section": "",
-    "text": "Es werden zur Auswertung die Daten von Wiegand (2019a) verwendet aus dem Zip-Archiv Wiegand (2019b). Diese Daten sind nach Attribution 4.0 International (CC-BY-4.0) lizensiert.\nAußerdem werden wordembeddings von Grave et al. (2018) verwendet. Diese Daten sind nach Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0) lizensiert.\nDas verwendete Bild ist von storyset auf Freepik storyset (n.d.)."
+    "text": "Es werden zur Auswertung die Daten von Wiegand (2019a) verwendet aus dem Zip-Archiv Wiegand (2019b). Diese Daten sind nach Attribution 4.0 International (CC-BY-4.0) lizensiert.\nAußerdem werden wordembeddings von Grave et al. (2018) verwendet. Diese Daten sind nach Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0) lizensiert.\nDas verwendete Bild ist von Altmann (n.d.)."
   },
   {
     "objectID": "posts/Text-Mining/index.html#trainingsdatensatz",
