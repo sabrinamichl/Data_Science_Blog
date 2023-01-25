@@ -13,7 +13,7 @@ Es werden zur Auswertung die Daten von @data/0B5VML_2019 verwendet aus dem Zip-A
 
 Außerdem werden wordembeddings von @grave2018learning verwendet. Diese Daten sind nach Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0) lizensiert.
 
-Das verwendete Bild ist von storyset auf Freepik.
+Das verwendete Bild ist von storyset auf Freepik @bildquelle.
 
 
 # 2. Pakete laden
