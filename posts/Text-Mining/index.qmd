@@ -7,16 +7,16 @@ bibliography: ref.bib
 image: image.jpg
 ---
 
-# Vorbemerkung
+# 1. Preliminary note
 
-Es werden zur Auswertung die Daten von @data/0B5VML_2019 verwendet aus dem Zip-Archiv @data/0B5VML/XIUWJ7_2019. Diese Daten sind nach Attribution 4.0 International (CC-BY-4.0) lizensiert.
+For this analysis we use the dataset from @data/0B5VML_2019 out of the zip archive @data/0B5VML/XIUWJ7_2019. The data are licensed according to Attribution 4.0 International (CC-BY-4.0).
 
-Außerdem werden wordembeddings von @grave2018learning verwendet. Diese Daten sind nach Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0) lizensiert.
+The used wordembeddings are from @grave2018learning. The data are licensed according to Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0).
 
-Das verwendete Bild ist von @bildquelle.
+The picture, that is used is from @bildquelle.
 
+# 2. Load the packages
 
-# 2. Pakete laden
 ```{r output=FALSE}
 library(tidyverse)
 library(rio)
@@ -32,21 +32,21 @@ library(remoji)  # Emojis
 library(tokenizers)  # Vektoren tokenisieren
 ```
 
-# 3. Datensatz laden & kleine Änderungen vornehhmen
+# 3. Load dataset and minor changes
 
-## Trainingsdatensatz
+## Train dataset
 
-```{r}
+```{r output=FALSE}
 d_train <- read_tsv("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.training.txt", col_names = FALSE)
 ```
 
-### Spalten umbenennen
+### Rename columns
 
 ```{r}
 names(d_train) <- c("text", "c1", "c2")
 ```
 
-### ID-Spalte einfügen
+### Add ID column
 
 ```{r}
 d_train <- d_train %>% 
@@ -54,19 +54,19 @@ d_train <- d_train %>%
   select(id, everything())
 ```
 
-## Testdatensatz
+## Test dataset
 
 ```{r output=FALSE}
 d_test <- read_tsv("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.test.txt", col_names = FALSE)
 ```
 
-### Spalten umbenennen
+### Rename columns
 
 ```{r}
 names(d_test) <- c("text", "c1", "c2")
 ```
 
-### ID-Spalte einfügen
+### Add ID column
 
 ```{r}
 d_test <- d_test %>% 
@@ -74,4 +74,50 @@ d_test <- d_test %>%
   select(id, everything())
 ```
 
-# 
+# 4. Explore dataset
+
+```{r}
+train_toc <- d_train %>% 
+  unnest_tokens(output = token, input = text)
+train_toc
+```
+
+> First we tokenize the dataset d_train!
+
+## Insert stopwords_de
+
+```{r}
+data(stopwords_de, package = "lsa")
+stopwords_de <- tibble(word = stopwords_de)
+stopwords_de <- stopwords_de %>% 
+  rename(token = word)
+```
+
+> After that we use the stopwords_de to `anti_join` this with train_toc.
+
+```{r}
+train_toc2 <- train_toc %>% 
+  anti_join(stopwords_de)
+```
+
+## Show the important words
+
+```{r}
+train_toc2 <- train_toc2 %>% 
+  count(token, sort = TRUE) 
+```
+
+### Plot
+
+```{r}
+train_toc2 %>% 
+  slice_head(n=20) %>%  
+  ggplot()+
+  aes(y=reorder(factor(token), n), x = n, color = token)+
+  geom_col(aes(fill = token, alpha = 2.5)) +
+  ggtitle("The most used words") +
+  ylab("token")+
+  xlab("quantity")+
+  theme_minimal()+
+  theme(legend.position = "none")
+```
