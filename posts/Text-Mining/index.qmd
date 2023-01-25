@@ -17,9 +17,6 @@ Das verwendete Bild ist von @bildquelle.
 
 
 # 2. Pakete laden
-
-
-
 ```{r output=FALSE}
 library(tidyverse)
 library(rio)
