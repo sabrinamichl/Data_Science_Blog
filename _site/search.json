@@ -32,7 +32,7 @@
     "href": "posts/Text-Mining/index.html",
     "title": "Datenauswertung",
     "section": "",
-    "text": "Es werden zur Auswertung die Daten von Wiegand (2019a) verwendet aus dem Zip-Archiv Wiegand (2019b). Diese Daten sind nach Attribution 4.0 International (CC-BY-4.0) lizensiert.\nAußerdem werden wordembeddings von Grave et al. (2018) verwendet. Diese Daten sind nach Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0) lizensiert."
+    "text": "Es werden zur Auswertung die Daten von Wiegand (2019a) verwendet aus dem Zip-Archiv Wiegand (2019b). Diese Daten sind nach Attribution 4.0 International (CC-BY-4.0) lizensiert.\nAußerdem werden wordembeddings von Grave et al. (2018) verwendet. Diese Daten sind nach Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0) lizensiert.\nDas verwendete Bild ist von storyset auf Freepik."
   },
   {
     "objectID": "posts/Text-Mining/index.html#trainingsdatensatz",
@@ -46,6 +46,6 @@
     "href": "posts/Text-Mining/index.html#testdatensatz",
     "title": "Datenauswertung",
     "section": "Testdatensatz",
-    "text": "Testdatensatz\n\nd_test <- read_tsv(\"C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.test.txt\", col_names = FALSE)\n\nRows: 2228 Columns: 3\n-- Column specification --------------------------------------------------------\nDelimiter: \"\\t\"\nchr (3): X1, X2, X3\n\ni Use `spec()` to retrieve the full column specification for this data.\ni Specify the column types or set `show_col_types = FALSE` to quiet this message.\n\n\n\nSpalten umbenennen\n\nnames(d_test) <- c(\"text\", \"c1\", \"c2\")\n\n\n\nID-Spalte einfügen\n\nd_test <- d_test %>% \n  mutate(id = row_number()) %>% \n  select(id, everything())"
+    "text": "Testdatensatz\n\nd_test <- read_tsv(\"C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.test.txt\", col_names = FALSE)\n\n\nSpalten umbenennen\n\nnames(d_test) <- c(\"text\", \"c1\", \"c2\")\n\n\n\nID-Spalte einfügen\n\nd_test <- d_test %>% \n  mutate(id = row_number()) %>% \n  select(id, everything())"
   }
 ]

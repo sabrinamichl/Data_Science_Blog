@@ -4,7 +4,7 @@ author: "Sabrina Michl"
 date: "2023-01-25"
 categories: [code, analysis]
 bibliography: ref.bib
-image: image.jpg
+image: image1
 ---
 
 # Vorbemerkung
@@ -13,9 +13,12 @@ Es werden zur Auswertung die Daten von @data/0B5VML_2019 verwendet aus dem Zip-A
 
 Außerdem werden wordembeddings von @grave2018learning verwendet. Diese Daten sind nach Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0) lizensiert.
 
-Das Bild ist von Pixabay @picture.
+Das verwendete Bild ist von storyset auf Freepik.
+
 
 # 2. Pakete laden
+
+
 
 ```{r output=FALSE}
 library(tidyverse)
@@ -56,7 +59,7 @@ d_train <- d_train %>%
 
 ## Testdatensatz
 
-```{r}
+```{r output=FALSE}
 d_test <- read_tsv("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.test.txt", col_names = FALSE)
 ```
 

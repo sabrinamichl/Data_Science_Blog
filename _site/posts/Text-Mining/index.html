@@ -230,6 +230,7 @@ div.csl-indent {
 <h1>Vorbemerkung</h1>
 <p>Es werden zur Auswertung die Daten von <span class="citation" data-cites="data/0B5VML_2019">Wiegand (<a href="#ref-data/0B5VML_2019" role="doc-biblioref">2019a</a>)</span> verwendet aus dem Zip-Archiv <span class="citation" data-cites="data/0B5VML/XIUWJ7_2019">Wiegand (<a href="#ref-data/0B5VML/XIUWJ7_2019" role="doc-biblioref">2019b</a>)</span>. Diese Daten sind nach Attribution 4.0 International (CC-BY-4.0) lizensiert.</p>
 <p>Außerdem werden wordembeddings von <span class="citation" data-cites="grave2018learning">Grave et al. (<a href="#ref-grave2018learning" role="doc-biblioref">2018</a>)</span> verwendet. Diese Daten sind nach Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0) lizensiert.</p>
+<p>Das verwendete Bild ist von storyset auf Freepik.</p>
 </section>
 <section id="pakete-laden" class="level1">
 <h1>2. Pakete laden</h1>
@@ -283,28 +284,19 @@ i Specify the column types or set `show_col_types = FALSE` to quiet this message
 <h2 class="anchored" data-anchor-id="testdatensatz">Testdatensatz</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>d_test <span class="ot">&lt;-</span> <span class="fu">read_tsv</span>(<span class="st">"C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.test.txt"</span>, <span class="at">col_names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 2228 Columns: 3
--- Column specification --------------------------------------------------------
-Delimiter: "\t"
-chr (3): X1, X2, X3
-
-i Use `spec()` to retrieve the full column specification for this data.
-i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-</div>
 </div>
 <section id="spalten-umbenennen-1" class="level3">
 <h3 class="anchored" data-anchor-id="spalten-umbenennen-1">Spalten umbenennen</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d_test) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"text"</span>, <span class="st">"c1"</span>, <span class="st">"c2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d_test) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"text"</span>, <span class="st">"c1"</span>, <span class="st">"c2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="id-spalte-einfügen-1" class="level3">
 <h3 class="anchored" data-anchor-id="id-spalte-einfügen-1">ID-Spalte einfügen</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>d_test <span class="ot">&lt;-</span> d_test <span class="sc">%&gt;%</span> </span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span> </span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id, <span class="fu">everything</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>d_test <span class="ot">&lt;-</span> d_test <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">row_number</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(id, <span class="fu">everything</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
