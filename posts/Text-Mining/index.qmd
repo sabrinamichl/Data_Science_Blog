@@ -20,16 +20,16 @@ The picture, that is used is from @bildquelle.
 ```{r output=FALSE}
 library(tidyverse)
 library(rio)
-library(tidymodels) #model, recipe, workflow
+library(tidymodels)
 library(tidytext)
 library(textrecipes)
-library(lsa)  # stopwords
-library(discrim)  # naive bayes classification
+library(lsa)
+library(discrim)
 library(naivebayes)
-library(tictoc)  # Zeitmessung
-library(fastrtext)  # Worteinbettungen
-library(remoji)  # Emojis
-library(tokenizers)  # Vektoren tokenisieren
+library(tictoc)
+library(fastrtext)
+library(remoji)
+library(tokenizers)
 ```
 
 # 3. Load dataset and minor changes
@@ -82,7 +82,7 @@ train_toc <- d_train %>%
 train_toc
 ```
 
-> First we tokenize the dataset d_train!
+> First we tokenize the dataset d_train.
 
 ## Insert stopwords_de
 
