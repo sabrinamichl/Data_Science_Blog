@@ -6,7 +6,7 @@ categories: [code, analysis]
 bibliography: ref.bib
 image: image.jpg
 sidebar:
-  contents: auto
+  contents: index.qmd
 ---
 
 # Preliminary Note
