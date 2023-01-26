@@ -11,7 +11,7 @@
     "href": "index.html",
     "title": "Text Mining for AWM",
     "section": "",
-    "text": "Text Mining\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n  \n\n\n\n\nText Mining\n\n\n\n\n\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 25, 2023\n\n\nSabrina Michl\n\n\n\n\n\n\n  \n\n\n\n\nPost With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 24, 2023\n\n\nHarlow Malloc\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nJan 21, 2023\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+    "text": "Text Mining\n\n\n\n\n\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 25, 2023\n\n\nSabrina Michl\n\n\n\n\n\n\n  \n\n\n\n\nPost With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 24, 2023\n\n\nHarlow Malloc\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nJan 21, 2023\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/post-with-code/index.html",
@@ -52,15 +52,15 @@
     "objectID": "posts/Text-Mining/index.html#train-dataset",
     "href": "posts/Text-Mining/index.html#train-dataset",
     "title": "Text Mining",
-    "section": "Train dataset",
-    "text": "Train dataset\n\nd_train <- read_tsv(\"C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.training.txt\", col_names = FALSE)\n\n\nRename columns\n\nnames(d_train) <- c(\"text\", \"c1\", \"c2\")\n\n\n\nAdd ID column\n\nd_train <- d_train %>% \n  mutate(id = row_number()) %>% \n  select(id, everything())"
+    "section": "Train Dataset",
+    "text": "Train Dataset\n\nd_train <- read_tsv(\"C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.training.txt\", col_names = FALSE)\n\n\nRename Columns\n\nnames(d_train) <- c(\"text\", \"c1\", \"c2\")\n\n\n\nAdd ID Column\n\nd_train <- d_train %>% \n  mutate(id = row_number()) %>% \n  select(id, everything())"
   },
   {
     "objectID": "posts/Text-Mining/index.html#test-dataset",
     "href": "posts/Text-Mining/index.html#test-dataset",
     "title": "Text Mining",
-    "section": "Test dataset",
-    "text": "Test dataset\n\nd_test <- read_tsv(\"C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.test.txt\", col_names = FALSE)\n\n\nRename columns\n\nnames(d_test) <- c(\"text\", \"c1\", \"c2\")\n\n\n\nAdd ID column\n\nd_test <- d_test %>% \n  mutate(id = row_number()) %>% \n  select(id, everything())"
+    "section": "Test Dataset",
+    "text": "Test Dataset\n\nd_test <- read_tsv(\"C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.test.txt\", col_names = FALSE)\n\n\nRename Columns\n\nnames(d_test) <- c(\"text\", \"c1\", \"c2\")\n\n\n\nAdd ID Column\n\nd_test <- d_test %>% \n  mutate(id = row_number()) %>% \n  select(id, everything())"
   },
   {
     "objectID": "posts/Text-Mining/index.html#insert-stopwords_de",
