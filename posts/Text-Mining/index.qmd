@@ -5,19 +5,9 @@ date: "2023-01-25"
 categories: [code, analysis]
 bibliography: ref.bib
 image: image.jpg
-format:
-  pdf: 
-   toc: true
-   number_section: true
-   colorlinks: true
-website:
-  page-naviagtion: true
-  sitebar:
-    style: "docked"
-    search: true
 ---
 
-# 1. Preliminary Note
+# Preliminary Note
 
 For this analysis we use the dataset from @data/0B5VML_2019 out of the zip archive @data/0B5VML/XIUWJ7_2019. The data are licensed according to Attribution 4.0 International (CC-BY-4.0).
 
@@ -25,7 +15,7 @@ The used wordembeddings are from @grave2018learning. The data are licensed accor
 
 The picture, that is used is from @bildquelle.
 
-# 2. Load The Packages
+# Load The Packages
 ```{r output=FALSE}
 library(tidyverse)
 library(rio)
@@ -41,7 +31,7 @@ library(remoji)
 library(tokenizers)
 ```
 
-# 3. Load Dataset And Minor Changes
+# Load Dataset And Minor Changes
 ## Train Dataset
 
 ```{r output=FALSE}
@@ -79,7 +69,7 @@ d_test <- d_test %>%
   select(id, everything())
 ```
 
-# 4. Explore Dataset
+# Explore Dataset
 ```{r}
 train_toc <- d_train %>% 
   unnest_tokens(output = token, input = text)
@@ -125,9 +115,9 @@ train_toc2 %>%
 
 > We see that, to most used word is "lbr". We could inspect the dataset way deeper, e. g. do a manual sentimentanalyse or do lemmatization or stem the words. But we will have a look to these types in the different machine learning algorithmen now.
 
-# 5. Preparation
+# Preparation
 
-## 5.1 Define Recipe - rec1 - TF-IDF
+## Define Recipe - rec1 - TF-IDF
 
 ```{r}
 rec1 <-
@@ -148,7 +138,7 @@ rec1_prep <- rec1 %>%
   recipes::bake(new_data = NULL)
 ```
 
-## 5.2 Define Recipe - rec2 - word embedding
+## Define Recipe - rec2 - word embedding
 ### Insert The Predefined List
 
 ```{r}
@@ -206,9 +196,9 @@ rec2_prep <- rec2 %>%
   recipes::bake(new_data = NULL)
 ```
 
-## 5.3 Define Recipe - rec3 - Word Embeddings
+## Define Recipe - rec3 - Word Embeddings
 ### Define Helperfunctions
-We are using the package `pradadata` from @sebastian_sauer_2018_1996614. The data are licensed according to General Public License 3 (GLP-3).
+We are using the package [pradadata] (https://github.com/sebastiansauer/pradadata) from @sebastian_sauer_2018_1996614. The data are licensed according to General Public License 3 (GLP-3).
 
 ```{r}
 data("schimpwoerter", package = "pradadata")
@@ -240,7 +230,7 @@ rec3_prep <- rec3 %>%
   recipes::bake(new_data = NULL)
 ```
 
-## 5.4 Define Recipe - rec4 - TF-IDF
+## Define Recipe - rec4 - TF-IDF
 ## rec4
 ```{r}
 rec4 <-
@@ -264,7 +254,7 @@ rec4_prep <- rec4 %>%
   recipes::bake(new_data = NULL)
 ```
 
-# 6. Build Resamples
+# Build Resamples
 Because of the large amount of the data and the extreme extensive recipes, we only use the V-Fold-Cross-Validation. 
 ```{r}
 folds <- vfold_cv(data = d_train,
@@ -273,14 +263,14 @@ folds <- vfold_cv(data = d_train,
                   strata = c1)
 ```
 
-# 7. Build the Penalty-Grid
+# Build the Penalty-Grid
 ```{r}
 lambda_grid <- grid_regular(penalty(), 
                             levels = 30)
 ```
 
-# 8. Build the Models
-## 8.1 Null model
+# Build the Models
+## Null model
 ```{r}
 mod0 <- null_model() %>% 
   set_engine("parsnip") %>% 
@@ -327,7 +317,7 @@ conf_mat_resampled(fit0, tidy = FALSE) %>%
 ```
 
 
-## 8.2 Lasso-L1 with TF-IDF
+## Lasso-L1 with TF-IDF
 ```{r}
 l1_8.2_mod <- logistic_reg(penalty = tune(), mixture = 1) %>% 
   set_engine("glmnet") %>% 
@@ -371,7 +361,7 @@ chosen_auc_l1_8.2_wf_fit
 ```
 
 
-## 8.3 Ridge-Regression-L2 with TF-IDF
+## Ridge-Regression-L2 with TF-IDF
 ```{r}
 l2_8.3_mod <- logistic_reg(penalty = tune(), mixture = 0) %>% 
   set_engine("glmnet") %>% 
@@ -409,7 +399,7 @@ chosen_auc_l2_8.3_wf_fit <-
 chosen_auc_l2_8.3_wf_fit
 ```
 
-## 8.4 Lasso-L1 with Word Embeddings
+## Lasso-L1 with Word Embeddings
 ```{r}
 l1_8.4_mod <- logistic_reg(penalty = tune(), mixture = 1) %>% 
   set_engine("glmnet") %>% 
@@ -448,7 +438,7 @@ chosen_auc_l1_8.4_wf_fit
 ```
 
 
-## 8.5 Ridge-Regression-L2 with Word Embeddings
+## Ridge-Regression-L2 with Word Embeddings
 ```{r}
 l2_8.5_mod <- logistic_reg(penalty = tune(), mixture = 0) %>% 
   set_engine("glmnet") %>% 
@@ -486,7 +476,7 @@ chosen_auc_l2_8.5_wf_fit <-
 chosen_auc_l2_8.5_wf_fit
 ```
 
-## 8.6 Lasso-L1 with Word Embeddings
+## Lasso-L1 with Word Embeddings
 ```{r}
 l1_8.6_mod <- logistic_reg(penalty = tune(), mixture = 1) %>% 
   set_engine("glmnet") %>% 
@@ -526,7 +516,7 @@ chosen_auc_l1_8.6_wf_fit <-
 chosen_auc_l1_8.6_wf_fit
 ```
 
-## 8.7 Ridge-Regression-L2 with TF-IDF
+## Ridge-Regression-L2 with TF-IDF
 ```{r}
 l2_8.7_mod <- logistic_reg(penalty = tune(), mixture = 0) %>% 
   set_engine("glmnet") %>% 
@@ -570,7 +560,7 @@ chosen_auc_l2_8.7_wf_fit
 ```
 
 
-## 8.8 Lasso-L1 with TF-IDF
+## Lasso-L1 with TF-IDF
 ```{r}
 l1_8.8_mod <- logistic_reg(penalty = tune(), mixture = 1) %>% 
   set_engine("glmnet") %>% 
@@ -613,7 +603,7 @@ chosen_auc_l1_8.8_wf_fit <-
 chosen_auc_l1_8.8_wf_fit
 ```
 
-## 8.9 Ridge-Regression-L2 with TF-IDF
+## Ridge-Regression-L2 with TF-IDF
 ```{r}
 l2_8.9_mod <- logistic_reg(penalty = tune(), mixture = 0) %>% 
   set_engine("glmnet") %>% 

@@ -4,15 +4,14 @@ author: "Harlow Malloc"
 date: "2023-01-24"
 categories: [news, code, analysis]
 image: "image.jpg"
-website:
-  page-naviagtion: true
-  sitebar:
-    style: "docked"
-    search: true
 ---
 
 This is a post with executable code.
 
 ```{r}
 1 + 1
+```
+
+```{r}
+3 + 3
 ```
