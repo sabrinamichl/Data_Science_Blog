@@ -11,7 +11,7 @@
     "href": "index.html",
     "title": "Text Mining for AWM",
     "section": "",
-    "text": "Datenauswertung\n\n\n\n\n\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 25, 2023\n\n\nSabrina Michl\n\n\n\n\n\n\n  \n\n\n\n\nPost With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 24, 2023\n\n\nHarlow Malloc\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nJan 21, 2023\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+    "text": "Text Mining\n\n\n\n\n\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 25, 2023\n\n\nSabrina Michl\n\n\n\n\n\n\n  \n\n\n\n\nPost With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 24, 2023\n\n\nHarlow Malloc\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nJan 21, 2023\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/post-with-code/index.html",
@@ -30,7 +30,7 @@
   {
     "objectID": "posts/Text-Mining/index.html",
     "href": "posts/Text-Mining/index.html",
-    "title": "Datenauswertung",
+    "title": "Text Mining",
     "section": "",
     "text": "For this analysis we use the dataset from Wiegand (2019a) out of the zip archive Wiegand (2019b). The data are licensed according to Attribution 4.0 International (CC-BY-4.0).\nThe used wordembeddings are from Grave et al. (2018). The data are licensed according to Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0).\nThe picture, that is used is from Altmann (n.d.)."
   },
@@ -51,29 +51,50 @@
   {
     "objectID": "posts/Text-Mining/index.html#train-dataset",
     "href": "posts/Text-Mining/index.html#train-dataset",
-    "title": "Datenauswertung",
+    "title": "Text Mining",
     "section": "Train dataset",
     "text": "Train dataset\n\nd_train <- read_tsv(\"C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.training.txt\", col_names = FALSE)\n\n\nRename columns\n\nnames(d_train) <- c(\"text\", \"c1\", \"c2\")\n\n\n\nAdd ID column\n\nd_train <- d_train %>% \n  mutate(id = row_number()) %>% \n  select(id, everything())"
   },
   {
     "objectID": "posts/Text-Mining/index.html#test-dataset",
     "href": "posts/Text-Mining/index.html#test-dataset",
-    "title": "Datenauswertung",
+    "title": "Text Mining",
     "section": "Test dataset",
     "text": "Test dataset\n\nd_test <- read_tsv(\"C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.test.txt\", col_names = FALSE)\n\n\nRename columns\n\nnames(d_test) <- c(\"text\", \"c1\", \"c2\")\n\n\n\nAdd ID column\n\nd_test <- d_test %>% \n  mutate(id = row_number()) %>% \n  select(id, everything())"
   },
   {
     "objectID": "posts/Text-Mining/index.html#insert-stopwords_de",
     "href": "posts/Text-Mining/index.html#insert-stopwords_de",
-    "title": "Datenauswertung",
+    "title": "Text Mining",
     "section": "Insert stopwords_de",
     "text": "Insert stopwords_de\n\ndata(stopwords_de, package = \"lsa\")\nstopwords_de <- tibble(word = stopwords_de)\nstopwords_de <- stopwords_de %>% \n  rename(token = word)\n\n\nAfter that we use the stopwords_de to anti_join this with train_toc.\n\n\ntrain_toc2 <- train_toc %>% \n  anti_join(stopwords_de)\n\nJoining, by = \"token\""
   },
   {
     "objectID": "posts/Text-Mining/index.html#show-the-important-words",
     "href": "posts/Text-Mining/index.html#show-the-important-words",
-    "title": "Datenauswertung",
+    "title": "Text Mining",
     "section": "Show the important words",
-    "text": "Show the important words\n\ntrain_toc2 <- train_toc2 %>% \n  count(token, sort = TRUE) \n\n\nPlot\n\ntrain_toc2 %>% \n  slice_head(n=20) %>%  \n  ggplot()+\n  aes(y=reorder(factor(token), n), x = n, color = token)+\n  geom_col(aes(fill = token, alpha = 2.5)) +\n  ggtitle(\"The most used words\") +\n  ylab(\"token\")+\n  xlab(\"quantity\")+\n  theme_minimal()+\n  theme(legend.position = \"none\")"
+    "text": "Show the important words\n\ntrain_toc2 <- train_toc2 %>% \n  count(token, sort = TRUE) \n\n\nPlot\n\ntrain_toc2 %>% \n  slice_head(n=20) %>%  \n  ggplot()+\n  aes(y=reorder(factor(token), n), x = n, color = token)+\n  geom_col(aes(fill = token, alpha = 2.5)) +\n  ggtitle(\"The most used words\") +\n  ylab(\"token\")+\n  xlab(\"quantity\")+\n  theme_minimal()+\n  theme(legend.position = \"none\")\n\n\n\n\n\nWe se that, to most used word is “lbr”. We could inspect the dataset way deeper, e. g. do a manual sentimentanalyse or do lemmatization or stem the words. But we will have a look to these types in the different machine learning algorithmen now."
+  },
+  {
+    "objectID": "posts/Text-Mining/index.html#define-recipe---rec1---tf-idf",
+    "href": "posts/Text-Mining/index.html#define-recipe---rec1---tf-idf",
+    "title": "Text Mining",
+    "section": "5.1 Define recipe - rec1 - TF-IDF",
+    "text": "5.1 Define recipe - rec1 - TF-IDF\n\nrec1 <-\n  recipe(c1 ~ ., data = select(d_train, text, c1, id)) %>% \n  update_role(id, new_role = \"id\") %>% \n  step_tokenize(text) %>% \n  step_stopwords(text, language = \"de\", stopword_source = \"snowball\") %>% \n  step_stem(text) %>% \n  step_tfidf(text) %>% \n  step_normalize(all_numeric_predictors())\nrec1\n\nRecipe\n\nInputs:\n\n      role #variables\n        id          1\n   outcome          1\n predictor          1\n\nOperations:\n\nTokenization for text\nStop word removal for text\nStemming for text\nTerm frequency-inverse document frequency with text\nCentering and scaling for all_numeric_predictors()\n\n\n\nprep & bake rec1\n\nrec1_prep <- rec1 %>% \n  prep() %>% \n  recipes::bake(new_data = NULL)"
+  },
+  {
+    "objectID": "posts/Text-Mining/index.html#define-recipe---rec2---word-embedding",
+    "href": "posts/Text-Mining/index.html#define-recipe---rec2---word-embedding",
+    "title": "Text Mining",
+    "section": "5.2 Define recipe - rec2 - word embedding",
+    "text": "5.2 Define recipe - rec2 - word embedding\n\nInsert the predefined list\n\nout_file_model <- \"C:/Users/sapi-/OneDrive - Hochschule für Angewandte Wissenschaften Ansbach/Desktop/AWM/angewandte Wirtschats- und Medienpsychologie/5. Semester/Word_Embedding/de.300.bin\"\n\n\nfile.exists(out_file_model)\n\n[1] TRUE\n\n\n\nfasttext_model <- load_model(out_file_model)\ndictionary <- get_dictionary(fasttext_model)\nget_word_vectors(fasttext_model, c(\"menschen\")) %>% `[`(1:10)\n\n [1] -0.043737594 -0.033647023 -0.016398411  0.037433818  0.029863771\n [6] -0.008217440  0.002691153 -0.027484305 -0.058012061  0.004103063\n\n\n\nprint(head(dictionary, 10))\n\n [1] \",\"    \".\"    \"</s>\" \"und\"  \"der\"  \":\"    \"die\"  \"\\\"\"   \")\"    \"(\"   \n\n\n\nword_embedding_text <- tibble(word = dictionary)\n\n\noptions(mc.cores = parallel::detectCores())\nwords_vecs <-\n  get_word_vectors(fasttext_model)\n\n\nword_embedding_text <-\n  word_embedding_text %>% \n  bind_cols(words_vecs)\n\nNew names:\n* `` -> `...2`\n* `` -> `...3`\n* `` -> `...4`\n* `` -> `...5`\n* `` -> `...6`\n* `` -> `...7`\n* `` -> `...8`\n* `` -> `...9`\n* `` -> `...10`\n* `` -> `...11`\n* `` -> `...12`\n* `` -> `...13`\n* `` -> `...14`\n* `` -> `...15`\n* `` -> `...16`\n* `` -> `...17`\n* `` -> `...18`\n* `` -> `...19`\n* `` -> `...20`\n* `` -> `...21`\n* `` -> `...22`\n* `` -> `...23`\n* `` -> `...24`\n* `` -> `...25`\n* `` -> `...26`\n* `` -> `...27`\n* `` -> `...28`\n* `` -> `...29`\n* `` -> `...30`\n* `` -> `...31`\n* `` -> `...32`\n* `` -> `...33`\n* `` -> `...34`\n* `` -> `...35`\n* `` -> `...36`\n* `` -> `...37`\n* `` -> `...38`\n* `` -> `...39`\n* `` -> `...40`\n* `` -> `...41`\n* `` -> `...42`\n* `` -> `...43`\n* `` -> `...44`\n* `` -> `...45`\n* `` -> `...46`\n* `` -> `...47`\n* `` -> `...48`\n* `` -> `...49`\n* `` -> `...50`\n* `` -> `...51`\n* `` -> `...52`\n* `` -> `...53`\n* `` -> `...54`\n* `` -> `...55`\n* `` -> `...56`\n* `` -> `...57`\n* `` -> `...58`\n* `` -> `...59`\n* `` -> `...60`\n* `` -> `...61`\n* `` -> `...62`\n* `` -> `...63`\n* `` -> `...64`\n* `` -> `...65`\n* `` -> `...66`\n* `` -> `...67`\n* `` -> `...68`\n* `` -> `...69`\n* `` -> `...70`\n* `` -> `...71`\n* `` -> `...72`\n* `` -> `...73`\n* `` -> `...74`\n* `` -> `...75`\n* `` -> `...76`\n* `` -> `...77`\n* `` -> `...78`\n* `` -> `...79`\n* `` -> `...80`\n* `` -> `...81`\n* `` -> `...82`\n* `` -> `...83`\n* `` -> `...84`\n* `` -> `...85`\n* `` -> `...86`\n* `` -> `...87`\n* `` -> `...88`\n* `` -> `...89`\n* `` -> `...90`\n* `` -> `...91`\n* `` -> `...92`\n* `` -> `...93`\n* `` -> `...94`\n* `` -> `...95`\n* `` -> `...96`\n* `` -> `...97`\n* `` -> `...98`\n* `` -> `...99`\n* `` -> `...100`\n* `` -> `...101`\n* `` -> `...102`\n* `` -> `...103`\n* `` -> `...104`\n* `` -> `...105`\n* `` -> `...106`\n* `` -> `...107`\n* `` -> `...108`\n* `` -> `...109`\n* `` -> `...110`\n* `` -> `...111`\n* `` -> `...112`\n* `` -> `...113`\n* `` -> `...114`\n* `` -> `...115`\n* `` -> `...116`\n* `` -> `...117`\n* `` -> `...118`\n* `` -> `...119`\n* `` -> `...120`\n* `` -> `...121`\n* `` -> `...122`\n* `` -> `...123`\n* `` -> `...124`\n* `` -> `...125`\n* `` -> `...126`\n* `` -> `...127`\n* `` -> `...128`\n* `` -> `...129`\n* `` -> `...130`\n* `` -> `...131`\n* `` -> `...132`\n* `` -> `...133`\n* `` -> `...134`\n* `` -> `...135`\n* `` -> `...136`\n* `` -> `...137`\n* `` -> `...138`\n* `` -> `...139`\n* `` -> `...140`\n* `` -> `...141`\n* `` -> `...142`\n* `` -> `...143`\n* `` -> `...144`\n* `` -> `...145`\n* `` -> `...146`\n* `` -> `...147`\n* `` -> `...148`\n* `` -> `...149`\n* `` -> `...150`\n* `` -> `...151`\n* `` -> `...152`\n* `` -> `...153`\n* `` -> `...154`\n* `` -> `...155`\n* `` -> `...156`\n* `` -> `...157`\n* `` -> `...158`\n* `` -> `...159`\n* `` -> `...160`\n* `` -> `...161`\n* `` -> `...162`\n* `` -> `...163`\n* `` -> `...164`\n* `` -> `...165`\n* `` -> `...166`\n* `` -> `...167`\n* `` -> `...168`\n* `` -> `...169`\n* `` -> `...170`\n* `` -> `...171`\n* `` -> `...172`\n* `` -> `...173`\n* `` -> `...174`\n* `` -> `...175`\n* `` -> `...176`\n* `` -> `...177`\n* `` -> `...178`\n* `` -> `...179`\n* `` -> `...180`\n* `` -> `...181`\n* `` -> `...182`\n* `` -> `...183`\n* `` -> `...184`\n* `` -> `...185`\n* `` -> `...186`\n* `` -> `...187`\n* `` -> `...188`\n* `` -> `...189`\n* `` -> `...190`\n* `` -> `...191`\n* `` -> `...192`\n* `` -> `...193`\n* `` -> `...194`\n* `` -> `...195`\n* `` -> `...196`\n* `` -> `...197`\n* `` -> `...198`\n* `` -> `...199`\n* `` -> `...200`\n* `` -> `...201`\n* `` -> `...202`\n* `` -> `...203`\n* `` -> `...204`\n* `` -> `...205`\n* `` -> `...206`\n* `` -> `...207`\n* `` -> `...208`\n* `` -> `...209`\n* `` -> `...210`\n* `` -> `...211`\n* `` -> `...212`\n* `` -> `...213`\n* `` -> `...214`\n* `` -> `...215`\n* `` -> `...216`\n* `` -> `...217`\n* `` -> `...218`\n* `` -> `...219`\n* `` -> `...220`\n* `` -> `...221`\n* `` -> `...222`\n* `` -> `...223`\n* `` -> `...224`\n* `` -> `...225`\n* `` -> `...226`\n* `` -> `...227`\n* `` -> `...228`\n* `` -> `...229`\n* `` -> `...230`\n* `` -> `...231`\n* `` -> `...232`\n* `` -> `...233`\n* `` -> `...234`\n* `` -> `...235`\n* `` -> `...236`\n* `` -> `...237`\n* `` -> `...238`\n* `` -> `...239`\n* `` -> `...240`\n* `` -> `...241`\n* `` -> `...242`\n* `` -> `...243`\n* `` -> `...244`\n* `` -> `...245`\n* `` -> `...246`\n* `` -> `...247`\n* `` -> `...248`\n* `` -> `...249`\n* `` -> `...250`\n* `` -> `...251`\n* `` -> `...252`\n* `` -> `...253`\n* `` -> `...254`\n* `` -> `...255`\n* `` -> `...256`\n* `` -> `...257`\n* `` -> `...258`\n* `` -> `...259`\n* `` -> `...260`\n* `` -> `...261`\n* `` -> `...262`\n* `` -> `...263`\n* `` -> `...264`\n* `` -> `...265`\n* `` -> `...266`\n* `` -> `...267`\n* `` -> `...268`\n* `` -> `...269`\n* `` -> `...270`\n* `` -> `...271`\n* `` -> `...272`\n* `` -> `...273`\n* `` -> `...274`\n* `` -> `...275`\n* `` -> `...276`\n* `` -> `...277`\n* `` -> `...278`\n* `` -> `...279`\n* `` -> `...280`\n* `` -> `...281`\n* `` -> `...282`\n* `` -> `...283`\n* `` -> `...284`\n* `` -> `...285`\n* `` -> `...286`\n* `` -> `...287`\n* `` -> `...288`\n* `` -> `...289`\n* `` -> `...290`\n* `` -> `...291`\n* `` -> `...292`\n* `` -> `...293`\n* `` -> `...294`\n* `` -> `...295`\n* `` -> `...296`\n* `` -> `...297`\n* `` -> `...298`\n* `` -> `...299`\n* `` -> `...300`\n* `` -> `...301`\n\n\n\nnames(word_embedding_text) <- c(\"word\", paste0(\"v\", sprintf(\"%03d\", 1:301)))\n\nWarning: The `value` argument of `names<-` must have the same length as `x` as of tibble\n3.0.0.\ni `names` must have length 301, not 302.\n\n\n\n\nrecipe definition rec2\n\nrec2 <- \n  recipe(c1 ~ ., data = select(d_train, text, c1, id)) %>% \n  update_role(id, new_role = \"id\") %>% \n  step_tokenize(text) %>% \n  step_stopwords(text, language = \"de\", stopword_source = \"snowball\") %>%\n  step_word_embeddings(text, embeddings = word_embedding_text)\n \nrec2\n\nRecipe\n\nInputs:\n\n      role #variables\n        id          1\n   outcome          1\n predictor          1\n\nOperations:\n\nTokenization for text\nStop word removal for text\nWord embeddings aggregated from text\n\n\n\nrec2_prep <- rec2 %>% \n  prep() %>% \n  recipes::bake(new_data = NULL)"
+  },
+  {
+    "objectID": "posts/Text-Mining/index.html#define-recipe---rec3",
+    "href": "posts/Text-Mining/index.html#define-recipe---rec3",
+    "title": "Text Mining",
+    "section": "5.3 Define recipe - rec3",
+    "text": "5.3 Define recipe - rec3\n\nDefine helperfunctions\nNow we are using the predefined list of Dirty, Naughty, Obscene and Otherwise Bad Words Patch (n.d.)\n\nschimpf1 <- import(\"https://raw.githubusercontent.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/master/de\", format = \",\", header = FALSE)"
   }
 ]

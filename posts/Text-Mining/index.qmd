@@ -1,5 +1,5 @@
 ---
-title: "Datenauswertung "
+title: "Text Mining"
 author: "Sabrina Michl"
 date: "2023-01-25"
 categories: [code, analysis]
@@ -7,7 +7,7 @@ bibliography: ref.bib
 image: image.jpg
 ---
 
-# 1. Preliminary note
+# 1. Preliminary Note
 
 For this analysis we use the dataset from @data/0B5VML_2019 out of the zip archive @data/0B5VML/XIUWJ7_2019. The data are licensed according to Attribution 4.0 International (CC-BY-4.0).
 
@@ -15,8 +15,7 @@ The used wordembeddings are from @grave2018learning. The data are licensed accor
 
 The picture, that is used is from @bildquelle.
 
-# 2. Load the packages
-
+# 2. Load The Packages
 ```{r output=FALSE}
 library(tidyverse)
 library(rio)
@@ -32,21 +31,20 @@ library(remoji)
 library(tokenizers)
 ```
 
-# 3. Load dataset and minor changes
-
-## Train dataset
+# 3. Load Dataset And Minor Changes
+## Train Dataset
 
 ```{r output=FALSE}
 d_train <- read_tsv("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.training.txt", col_names = FALSE)
 ```
 
-### Rename columns
+### Rename Columns
 
 ```{r}
 names(d_train) <- c("text", "c1", "c2")
 ```
 
-### Add ID column
+### Add ID Column
 
 ```{r}
 d_train <- d_train %>% 
@@ -54,28 +52,24 @@ d_train <- d_train %>%
   select(id, everything())
 ```
 
-## Test dataset
-
+## Test Dataset
 ```{r output=FALSE}
 d_test <- read_tsv("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.test.txt", col_names = FALSE)
 ```
 
-### Rename columns
-
+### Rename Columns
 ```{r}
 names(d_test) <- c("text", "c1", "c2")
 ```
 
-### Add ID column
-
+### Add ID Column
 ```{r}
 d_test <- d_test %>% 
   mutate(id = row_number()) %>% 
   select(id, everything())
 ```
 
-# 4. Explore dataset
-
+# 4. Explore Dataset
 ```{r}
 train_toc <- d_train %>% 
   unnest_tokens(output = token, input = text)
@@ -84,8 +78,7 @@ train_toc
 
 > First we tokenize the dataset d_train.
 
-## Insert stopwords_de
-
+## Insert `Stopwords_de`
 ```{r}
 data(stopwords_de, package = "lsa")
 stopwords_de <- tibble(word = stopwords_de)
@@ -100,15 +93,13 @@ train_toc2 <- train_toc %>%
   anti_join(stopwords_de)
 ```
 
-## Show the important words
-
+## Show The Important Words
 ```{r}
 train_toc2 <- train_toc2 %>% 
   count(token, sort = TRUE) 
 ```
 
 ### Plot
-
 ```{r}
 train_toc2 %>% 
   slice_head(n=20) %>%  
@@ -121,3 +112,374 @@ train_toc2 %>%
   theme_minimal()+
   theme(legend.position = "none")
 ```
+
+> We see that, to most used word is "lbr". We could inspect the dataset way deeper, e. g. do a manual sentimentanalyse or do lemmatization or stem the words. But we will have a look to these types in the different machine learning algorithmen now.
+
+# 5. Preparation
+
+## 5.1 Define Recipe - rec1 - TF-IDF
+
+```{r}
+rec1 <-
+  recipe(c1 ~ ., data = select(d_train, text, c1, id)) %>% 
+  update_role(id, new_role = "id") %>% 
+  step_tokenize(text) %>% 
+  step_stopwords(text, language = "de", stopword_source = "snowball") %>% 
+  step_stem(text) %>% 
+  step_tfidf(text) %>% 
+  step_normalize(all_numeric_predictors())
+rec1
+```
+
+### Prep & Bake - rec1
+```{r}
+rec1_prep <- rec1 %>% 
+  prep() %>% 
+  recipes::bake(new_data = NULL)
+```
+
+## 5.2 Define Recipe - rec2 - word embedding
+### Insert The Predefined List
+
+```{r}
+out_file_model <- "C:/Users/sapi-/OneDrive - Hochschule für Angewandte Wissenschaften Ansbach/Desktop/AWM/angewandte Wirtschats- und Medienpsychologie/5. Semester/Word_Embedding/de.300.bin"
+```
+
+```{r}
+file.exists(out_file_model)
+```
+
+```{r}
+fasttext_model <- load_model(out_file_model)
+dictionary <- get_dictionary(fasttext_model)
+get_word_vectors(fasttext_model, c("menschen")) %>% `[`(1:10)
+```
+
+```{r}
+print(head(dictionary, 10))
+```
+
+```{r}
+word_embedding_text <- tibble(word = dictionary)
+```
+
+```{r}
+options(mc.cores = parallel::detectCores())
+words_vecs <- get_word_vectors(fasttext_model)
+```
+
+```{r output=FALSE}
+word_embedding_text <-
+  word_embedding_text %>% 
+  bind_cols(words_vecs)
+```
+
+```{r}
+names(word_embedding_text) <- c("word", paste0("v", sprintf("%03d", 1:301)))
+```
+
+### Recipe Definition rec2
+```{r}
+rec2 <- 
+  recipe(c1 ~ ., data = select(d_train, text, c1, id)) %>% 
+  update_role(id, new_role = "id") %>% 
+  step_tokenize(text) %>% 
+  step_stopwords(text, language = "de", stopword_source = "snowball") %>%
+  step_word_embeddings(text, embeddings = word_embedding_text)
+ 
+rec2
+```
+
+```{r}
+rec2_prep <- rec2 %>% 
+  prep() %>% 
+  recipes::bake(new_data = NULL)
+```
+
+## 5.3 Define Recipe - rec3 - Word Embeddings
+### Define Helperfunctions
+We are using the package `pradadata` from @sebastian_sauer_2018_1996614. The data are licensed according to General Public License 3 (GLP-3).
+
+```{r}
+data("schimpwoerter", package = "pradadata")
+data("sentiws", package = "pradadata")
+data("wild_emojis", package = "pradadata")
+source("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/helper/helper_funs.R")
+```
+
+## rec3
+```{r}
+rec3 <-
+  recipe(c1 ~., data = select(d_train, text, c1, id)) %>% 
+  update_role(id, new_role = "id") %>% 
+  step_text_normalization(text) %>% 
+  step_mutate(emo_count = map_int(text, ~count_lexicon(.x, sentiws$word))) %>% 
+  step_mutate(schimpf_count = map_int(text, ~count_lexicon(.x, schimpfwoerter$word))) %>% 
+  step_mutate(wild_emojis = map_int(text, ~count_lexicon(.x, wild_emojis$emoji))) %>% 
+  step_mutate(text_copy = text) %>% 
+  step_textfeature(text_copy) %>% 
+  step_tokenize(text) %>% 
+  step_stopwords(text, language = "de", stopword_source = "snowball") %>% 
+  step_stem(text) %>% 
+  step_word_embeddings(text, embeddings = word_embedding_text)
+```
+
+```{r}
+rec3_prep <- rec3 %>% 
+  prep() %>% 
+  recipes::bake(new_data = NULL)
+```
+
+## 5.4 Define Recipe - rec4 - TF-IDF
+## rec4
+```{r}
+rec4 <-
+  recipe(c1 ~., data = select(d_train, text, c1, id)) %>% 
+  update_role(id, new_role = "id") %>% 
+  step_text_normalization(text) %>% 
+  step_mutate(emo_count = map_int(text, ~count_lexicon(.x, sentiws$word))) %>% 
+  step_mutate(schimpf_count = map_int(text, ~count_lexicon(.x, schimpfwoerter$word))) %>% 
+  step_mutate(wild_emojis = map_int(text, ~count_lexicon(.x, wild_emojis$emoji))) %>% 
+  step_mutate(text_copy = text) %>% 
+  step_textfeature(text_copy) %>% 
+  step_tokenize(text) %>% 
+  step_stopwords(text, language = "de", stopword_source = "snowball") %>% 
+  step_stem(text) %>% 
+  step_tfidf(text)
+```
+
+```{r}
+rec4_prep <- rec4 %>% 
+  prep() %>% 
+  recipes::bake(new_data = NULL)
+```
+
+# 6. Build Resamples
+Because of the large amount of the data and the extreme extensive recipes, we only use the V-Fold-Cross-Validation. 
+```{r}
+folds <- vfold_cv(data = d_train,
+                  v = 2,
+                  repeats = 1,
+                  strata = c1)
+```
+
+# 7. Build the Penalty-Grid
+```{r}
+lambda_grid <- grid_regular(penalty(), 
+                            levels = 30)
+```
+
+# 8. Build the Models
+## 8.1 Null model
+```{r}
+null_mod <- null_model() %>% 
+  set_engine("parsnip") %>% 
+  set_mode("classification")
+```
+
+## Define The Workflow
+```{r}
+wf0 <- workflow() %>% 
+  add_recipe(rec1) %>% 
+  add_model(null_mod)
+```
+
+## Resampling & Model Quality
+```{r}
+options(mc.cores = parallel::detectCores())
+tic()
+null_fit <- fit_resamples(
+  wf0,
+  folds,
+  control =control_resamples(save_pred = TRUE)
+)
+toc()
+```
+
+
+```{r}
+wf0_performance <- collect_metrics(null_fit)
+wf0_performance
+```
+
+```{r}
+wf_preds <- collect_predictions(null_fit)
+
+wf_preds %>% 
+  group_by(id) %>% 
+  roc_curve(truth = c1, .pred_OFFENSE) %>% 
+  autoplot()
+```
+
+```{r}
+conf_mat_resampled(null_fit, tidy = FALSE) %>% 
+  autoplot(type = "heatmap")
+```
+
+----- *AB HIER WEITER* -----
+
+## 8.2 Lasso-L1 with TF-IDF
+```{r}
+l1_mod <- logistic_reg(penalty = tune(), mixture = 1) %>% 
+  set_engine("glmnet") %>% 
+  set_mode("classification")
+l1_mod
+```
+
+### Define the Workflow
+```{r}
+l1_wf <-workflow() %>% 
+  add_recipe(rec1) %>% 
+  add_model(l1_mod)
+l1_wf
+```
+
+### Resampling & Model Quality 
+```{r}
+options(mc.cores = parallel::detectCores())
+l1_wf_fit_v <- tune_grid(
+  l1_wf,
+  folds,
+  grid = lambda_grid,
+  control = control_resamples(save_pred = TRUE)
+)
+```
+
+```{r}
+l1_wf_performance <- collect_metrics(l1_wf_fit_v)
+l1_wf_performance
+```
+
+#### Metrics
+```{r}
+collect_metrics(l1_wf_fit_v)
+```
+
+```{r}
+select_best(l1_wf_fit_v)
+```
+
+```{r}
+chosen_auc_l1_wf_fit_v <- 
+  l1_wf_fit_v %>%
+  select_by_one_std_err(metric = "roc_auc", -penalty)
+chosen_auc_l1_wf_fit_v
+```
+
+## 8.3 Ridge-Regression-L2 with TF-IDF
+```{r}
+l2_mod <- logistic_reg(penalty = tune(), mixture = 0) %>% 
+  set_engine("glmnet") %>% 
+  set_mode("classification")
+l2_mod
+```
+
+### Define the Workflow
+```{r}
+l2_wf <-workflow() %>% 
+  add_recipe(rec1) %>% 
+  add_model(l2_mod)
+l2_wf
+```
+
+### Resampling & Model Quality 
+```{r}
+options(mc.cores = parallel::detectCores())
+l2_wf_fit_v <- tune_grid(
+  l2_wf,
+  folds,
+  grid = lambda_grid,
+  control = control_resamples(save_pred = TRUE)
+)
+```
+
+```{r}
+collect_metrics(l2_wf_fit_v)
+```
+
+```{r}
+chosen_auc_l2_wf_fit_v <- 
+  l2_wf_fit_v %>%
+  select_by_one_std_err(metric = "roc_auc", -penalty)
+chosen_auc_l2_wf_fit_v
+```
+
+## 8.4 Ridge-Regression-L2 with Word Embeddings
+```{r}
+lasso_mod1 <- logistic_reg(penalty = tune(), mixture = 0) %>% 
+  set_engine("glmnet") %>% 
+  set_mode("classification")
+lasso_mod1
+```
+
+### Define the Workflow
+```{r}
+we_l1_wf <- workflow() %>% 
+  add_recipe(rec2) %>% 
+  add_model(lasso_mod1)
+we_l1_wf
+```
+
+### Resampling & Model Quality 
+```{r}
+options(mc.cores = parallel::detectCores())
+we_l1_fit <- tune_grid(
+  we_l1_wf,
+  folds,
+  grid = lambda_grid,
+  control = control_resamples(save_pred = TRUE)
+)
+```
+
+```{r}
+collect_metrics(we_l1_fit)
+```
+
+```{r}
+chosen_auc_we_fit <- 
+  we_l1_fit %>%
+  select_by_one_std_err(metric = "roc_auc", -penalty)
+chosen_auc_we_fit
+```
+
+## 8.5 Lasso-L1 with Word Embeddings and rec3
+```{r}
+lasso_mod1_3 <- logistic_reg(penalty = tune(), mixture = 1) %>% 
+  set_engine("glmnet") %>% 
+  set_mode("classification")
+lasso_mod1_3
+```
+
+### Define the Workflow
+```{r}
+we_l1_wf3 <- workflow() %>% 
+  add_recipe(rec3) %>% 
+  add_model(lasso_mod1_3)
+we_l1_wf3
+```
+
+### Resampling & Model Quality 
+```{r}
+options(mc.cores = parallel::detectCores())
+we_l1_fit3 <- tune_grid(
+  we_l1_wf3,
+  folds,
+  grid = lambda_grid,
+  control = control_resamples(save_pred = TRUE)
+)
+```
+
+### Performance
+```{r}
+collect_metrics(we_l1_fit3)
+```
+
+### Best Model
+```{r}
+chosen_auc_we_fit <- 
+  we_l1_fit3 %>%
+  select_by_one_std_err(metric = "roc_auc", -penalty)
+chosen_auc_we_fit
+```
+
+
