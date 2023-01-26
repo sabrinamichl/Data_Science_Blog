@@ -10,6 +10,11 @@ format:
    toc: true
    number_section: true
    colorlinks: true
+website:
+  page-naviagtion: true
+  sitebar:
+    style: "docked"
+    search: true
 ---
 
 # 1. Preliminary Note
@@ -565,7 +570,7 @@ chosen_auc_l2_8.7_wf_fit
 ```
 
 
-## 8.8 Lasso-L1 mit TF-IDF
+## 8.8 Lasso-L1 with TF-IDF
 ```{r}
 l1_8.8_mod <- logistic_reg(penalty = tune(), mixture = 1) %>% 
   set_engine("glmnet") %>% 
@@ -608,7 +613,7 @@ chosen_auc_l1_8.8_wf_fit <-
 chosen_auc_l1_8.8_wf_fit
 ```
 
-## 8.9 Ridge-Regression-L2 mit TF-IDF
+## 8.9 Ridge-Regression-L2 with TF-IDF
 ```{r}
 l2_8.9_mod <- logistic_reg(penalty = tune(), mixture = 0) %>% 
   set_engine("glmnet") %>% 
