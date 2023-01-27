@@ -116,7 +116,7 @@ theme_minimal()+
 theme(legend.position = "none")
 ```
 
-> We see that, to most used word is "lbr". We could inspect the dataset way deeper, e. g. do a manual sentimentanalyse or do lemmatization or stem the words. But we will have a look to these types in the different machine learning algorithmen now. \# Preparation \## Define Recipe - rec1 - TF-IDF
+> We see that, to most used word is "lbr". We could inspect the dataset way deeper, e. g. do a manual sentimentanalysis or do a lemmatization or stem the words. But we will have a look to these types in the different machine learning algorithm now.
 
 # 5. Preparation
 
@@ -143,6 +143,21 @@ recipes::bake(new_data = NULL)
 ```
 
 ## 5.2 Define Recipe - rec2 - word embedding
+
+After fitting all the models I have decided to not fit the easy word embedding recipe (rec2)! The reason for this decision is, because of the analysis run-time! We have a large amount of data and extensive recipes, so when I raise the resamples for the prediction, R Studio quits the session.
+
+-   training: v = 1, folds = 2
+
+-   prediction: v = 2, folds = 5
+
+```{r}
+#rec2 <-
+#recipe(c1 ~ ., data = select(d_train, text, c1, id)) %>%
+#update_role(id, new_role = "id") %>%
+#step_tokenize(text) %>%
+#step_stopwords(text, language = "de", stopword_source = "snowball") %>%
+#step_word_embeddings(text, embeddings = word_embedding_text)
+```
 
 ### Insert The Predefined List
 
@@ -181,28 +196,6 @@ bind_cols(words_vecs)
 
 ```{r}
 names(word_embedding_text) <- c("word", paste0("v", sprintf("%03d", 1:301)))
-```
-
-### Recipe Definition rec2
-
-```{r}
-tic()
-```
-
-```{r}
-rec2 <-
-recipe(c1 ~ ., data = select(d_train, text, c1, id)) %>%
-update_role(id, new_role = "id") %>%
-step_tokenize(text) %>%
-step_stopwords(text, language = "de", stopword_source = "snowball") %>%
-step_word_embeddings(text, embeddings = word_embedding_text)
-rec2
-```
-
-```{r}
-rec2_prep <- rec2 %>%
-prep() %>%
-recipes::bake(new_data = NULL)
 ```
 
 ## 5.3 Define Recipe - rec3 - Word Embeddings
@@ -274,7 +267,7 @@ I have decided to go with the V-Fold-Cross-Validation, because of the time. We h
 
 ```{r}
 folds <- vfold_cv(data = d_train,
-v = 2,
+v = 3,
 repeats = 1,
 strata = c1)
 ```
@@ -288,6 +281,10 @@ lambda_grid <- grid_regular(penalty(), levels = 30)
 # 8. Build the Models
 
 ## 8.1 Null Model
+
+```{r}
+tic()
+```
 
 ```{r}
 mod0 <- null_model() %>%
@@ -339,51 +336,62 @@ autoplot(type = "heatmap")
 ### L1-Model
 
 ```{r}
-l1_8.2_mod <- logistic_reg(penalty = tune(), mixture = 1) %>%
+l1_82_mod <- logistic_reg(penalty = tune(), mixture = 1) %>%
 set_engine("glmnet") %>%
 set_mode("classification")
-l1_8.2_mod
+l1_82_mod
 ```
 
 ### Define The Workflow
 
 ```{r}
-l1_8.2_wf <-workflow() %>%
+l1_82_wf <-workflow() %>%
 add_recipe(rec1) %>%
-add_model(l1_8.2_mod)
-l1_8.2_wf
+add_model(l1_82_mod)
+l1_82_wf
 ```
 
 ### Resampling & Model Quality
 
 ```{r}
 options(mc.cores = parallel::detectCores())
-l1_8.2_wf_fit <- tune_grid(
-l1_8.2_wf,
+l1_82_wf_fit <- tune_grid(
+l1_82_wf,
 folds,
 grid = lambda_grid,
 control = control_resamples(save_pred = TRUE)
 )
 ```
 
+### Model Performance
+
 ```{r}
-l1_8.2_wf_fit_performance <- collect_metrics(l1_8.2_wf_fit)
-l1_8.2_wf_fit_performance
+l1_82_wf_fit_performance <- collect_metrics(l1_82_wf_fit)
+l1_82_wf_fit_performance
 ```
 
-### Show The Best
+```{r}
+l1_82_wf_fit_preds <- collect_predictions(l1_82_wf_fit)
+```
 
 ```{r}
-select_best(l1_8.2_wf_fit)
+l1_82_wf_fit_preds %>% 
+  group_by(id) %>% 
+  roc_curve(truth = c1, .pred_OFFENSE) %>% 
+  autoplot()
+```
+
+```{r}
+autoplot(l1_82_wf_fit)
 ```
 
 ### Select The Best
 
 ```{r}
-chosen_auc_l1_8.2_wf_fit <-
-l1_8.2_wf_fit %>%
+chosen_auc_l1_82_wf_fit <-
+l1_82_wf_fit %>%
 select_by_one_std_err(metric = "roc_auc", -penalty)
-chosen_auc_l1_8.2_wf_fit
+chosen_auc_l1_82_wf_fit
 ```
 
 ## 8.3 Ridge-Regression-L2 With TF-IDF
@@ -391,27 +399,27 @@ chosen_auc_l1_8.2_wf_fit
 ### L2-Model
 
 ```{r}
-l2_8.3_mod <- logistic_reg(penalty = tune(), mixture = 0) %>%
+l2_83_mod <- logistic_reg(penalty = tune(), mixture = 0) %>%
 set_engine("glmnet") %>%
 set_mode("classification")
-l2_8.3_mod
+l2_83_mod
 ```
 
 ### Define The Workflow
 
 ```{r}
-l2_8.3_wf <-workflow() %>%
+l2_83_wf <-workflow() %>%
 add_recipe(rec1) %>%
-add_model(l2_8.3_mod)
-l2_8.3_wf
+add_model(l2_83_mod)
+l2_83_wf
 ```
 
 ### Resampling & Model Quality
 
 ```{r}
 options(mc.cores = parallel::detectCores())
-l2_8.3_wf_fit <- tune_grid(
-l2_8.3_wf,
+l2_83_wf_fit <- tune_grid(
+l2_83_wf,
 folds,
 grid = lambda_grid,
 control = control_resamples(save_pred = TRUE)
@@ -419,16 +427,34 @@ control = control_resamples(save_pred = TRUE)
 ```
 
 ```{r}
-collect_metrics(l2_8.3_wf_fit)
+collect_metrics(l2_83_wf_fit)
+```
+
+### Model Performance
+
+```{r}
+l2_83_wf_fit_performance <- collect_metrics(l2_83_wf_fit)
+l2_83_wf_fit_performance
+```
+
+```{r}
+l2_83_wf_fit_preds <- collect_predictions(l2_83_wf_fit)
+```
+
+```{r}
+l2_83_wf_fit_preds %>% 
+  group_by(id) %>% 
+  roc_curve(truth = c1, .pred_OFFENSE) %>% 
+  autoplot()
 ```
 
 ### Select The Best
 
 ```{r}
-chosen_auc_l2_8.3_wf_fit <-
-l2_8.3_wf_fit %>%
+chosen_auc_l2_83_wf_fit <-
+l2_83_wf_fit %>%
 select_by_one_std_err(metric = "roc_auc", -penalty)
-chosen_auc_l2_8.3_wf_fit
+chosen_auc_l2_83_wf_fit
 ```
 
 ## 8.4 Lasso-L1 With Word Embeddings
@@ -436,117 +462,27 @@ chosen_auc_l2_8.3_wf_fit
 ### L1-Model
 
 ```{r}
-l1_8.4_mod <- logistic_reg(penalty = tune(), mixture = 1) %>%
+l1_84_mod <- logistic_reg(penalty = tune(), mixture = 1) %>%
 set_engine("glmnet") %>%
 set_mode("classification")
-l1_8.4_mod
-```
-
-### Define the Workflow
-
-```{r}
-l1_8.4_wf <- workflow() %>%
-add_recipe(rec2) %>%
-add_model(l1_8.4_mod)
-l1_8.4_wf
-```
-
-### Resampling & Model Quality
-
-```{r}
-options(mc.cores = parallel::detectCores())
-l1_8.4_wf_fit <- tune_grid(
-l1_8.4_wf,
-folds,
-grid = lambda_grid,
-control = control_resamples(save_pred = TRUE)
-)
-```
-
-```{r}
-collect_metrics(l1_8.4_wf_fit)
-```
-
-### Select The Best
-
-```{r}
-chosen_auc_l1_8.4_wf_fit <-
-l1_8.4_wf_fit %>%
-select_by_one_std_err(metric = "roc_auc", -penalty)
-chosen_auc_l1_8.4_wf_fit
-```
-
-## 8.5 Ridge-Regression-L2 With Word Embeddings
-
-### L2-Model
-
-```{r}
-l2_8.5_mod <- logistic_reg(penalty = tune(), mixture = 0) %>%
-set_engine("glmnet") %>%
-set_mode("classification")
-l2_8.5_mod
-```
-
-### Define the Workflow
-
-```{r}
-l2_8.5_wf <- workflow() %>%
-add_recipe(rec2) %>%
-add_model(l2_8.5_mod)
-l2_8.5_wf
-```
-
-### Resampling & Model Quality
-
-```{r}
-options(mc.cores = parallel::detectCores())
-l2_8.5_wf_fit <- tune_grid(
-l2_8.5_wf,
-folds,
-grid = lambda_grid,
-control = control_resamples(save_pred = TRUE)
-)
-```
-
-```{r}
-collect_metrics(l2_8.5_wf_fit)
-```
-
-### Select The Best
-
-```{r}
-chosen_auc_l2_8.5_wf_fit <-
-l2_8.5_wf_fit %>%
-select_by_one_std_err(metric = "roc_auc", -penalty)
-chosen_auc_l2_8.5_wf_fit
-```
-
-## 8.6 Lasso-L1 With Word Embeddings
-
-### L1-Model
-
-```{r}
-l1_8.6_mod <- logistic_reg(penalty = tune(), mixture = 1) %>%
-set_engine("glmnet") %>%
-set_mode("classification")
-l1_8.6_mod
+l1_84_mod
 ```
 
 ### Define The Workflow
 
 ```{r}
-l1_8.6_wf <- workflow() %>%
+l1_84_wf <- workflow() %>%
 add_recipe(rec3) %>%
-add_model(l1_8.6_mod)
-l1_8.6_wf
+add_model(l1_84_mod)
+l1_84_wf
 ```
 
 ### Resampling & Model Quality
 
 ```{r}
 options(mc.cores = parallel::detectCores())
-l1_8.6_wf_fit <- tune_grid(
-l1_8.6_wf,
+l1_84_wf_fit <- tune_grid(
+l1_84_wf,
 folds,
 grid = lambda_grid,
 control = control_resamples(save_pred = TRUE)
@@ -554,169 +490,227 @@ control = control_resamples(save_pred = TRUE)
 ```
 
 ```{r}
-collect_metrics(l1_8.6_wf_fit)
+collect_metrics(l1_84_wf_fit)
+```
+
+### Model Performance
+
+```{r}
+l1_84_wf_fit_performance <- collect_metrics(l1_84_wf_fit)
+l1_84_wf_fit_performance
+```
+
+```{r}
+l1_84_wf_fit_preds <- collect_predictions(l1_84_wf_fit)
+```
+
+```{r}
+l1_84_wf_fit_preds %>% 
+  group_by(id) %>% 
+  roc_curve(truth = c1, .pred_OFFENSE) %>% 
+  autoplot()
 ```
 
 ### Select The Best
 
 ```{r}
-chosen_auc_l1_8.6_wf_fit <-
-l1_8.6_wf_fit %>%
+chosen_auc_l1_84_wf_fit <-
+l1_84_wf_fit %>%
 select_by_one_std_err(metric = "roc_auc", -penalty)
-chosen_auc_l1_8.6_wf_fit
+chosen_auc_l1_84_wf_fit
 ```
 
-## 8.7 Ridge-Regression-L2 with TF-IDF
+## 8.5 Ridge-Regression-L2 with TF-IDF
 
 ### L2-Model
 
 ```{r}
-l2_8.7_mod <- logistic_reg(penalty = tune(), mixture = 0) %>%
+l2_85_mod <- logistic_reg(penalty = tune(), mixture = 0) %>%
 set_engine("glmnet") %>%
 set_mode("classification")
-l2_8.7_mod
+l2_85_mod
 ```
 
 ### Define The Workflow
 
 ```{r}
-l2_8.7_wf <-workflow() %>%
+l2_85_wf <-workflow() %>%
 add_recipe(rec3) %>%
-add_model(l2_8.7_mod)
-l2_8.7_wf
+add_model(l2_85_mod)
+l2_85_wf
 ```
 
 ### Resampling & Model Quality
 
 ```{r}
 options(mc.cores = parallel::detectCores())
-l2_8.7_wf_fit <- tune_grid(
-l2_8.7_wf,
+l2_85_wf_fit <- tune_grid(
+l2_85_wf,
 folds,
 grid = lambda_grid,
 control = control_resamples(save_pred = TRUE)
 )
 ```
 
+### Model Performance
+
 ```{r}
-l2_8.7_wf_performance <- collect_metrics(l2_8.7_wf_fit)
-l2_8.7_wf_performance
+l2_85_wf_performance <- collect_metrics(l2_85_wf_fit)
+l2_85_wf_performance
+```
+
+```{r}
+l2_85_wf_fit_preds <- collect_predictions(l2_85_wf_fit)
+```
+
+```{r}
+l2_85_wf_fit_preds %>% 
+  group_by(id) %>% 
+  roc_curve(truth = c1, .pred_OFFENSE) %>% 
+  autoplot()
 ```
 
 ### Show The Best
 
 ```{r}
-select_best(l2_8.7_wf_fit)
+show_best(l2_85_wf_fit)
 ```
 
 ### Select The Best
 
 ```{r}
-chosen_auc_l2_8.7_wf_fit <-
-l2_8.7_wf_fit %>%
+chosen_auc_l2_85_wf_fit <-
+l2_85_wf_fit %>%
 select_by_one_std_err(metric = "roc_auc", -penalty)
-chosen_auc_l2_8.7_wf_fit
+chosen_auc_l2_85_wf_fit
 ```
 
-## 8.8 Lasso-L1 With TF-IDF
+## 8.6 Lasso-L1 With TF-IDF
 
 ### L1-Model
 
 ```{r}
-l1_8.8_mod <- logistic_reg(penalty = tune(), mixture = 1) %>%
+l1_86_mod <- logistic_reg(penalty = tune(), mixture = 1) %>%
 set_engine("glmnet") %>%
 set_mode("classification")
-l1_8.8_mod
+l1_86_mod
 ```
 
 ### Define The Workflow
 
 ```{r}
-l1_8.8_wf <-workflow() %>%
+l1_86_wf <-workflow() %>%
 add_recipe(rec4) %>%
-add_model(l1_8.8_mod)
-l1_8.8_wf
+add_model(l1_86_mod)
+l1_86_wf
 ```
 
 ### Resampling & Model Quality
 
 ```{r}
 options(mc.cores = parallel::detectCores())
-l1_8.8_wf_fit <- tune_grid(
-l1_8.8_wf,
+l1_86_wf_fit <- tune_grid(
+l1_86_wf,
 folds,
 grid = lambda_grid,
 control = control_resamples(save_pred = TRUE)
 )
 ```
 
+### Model Performance
+
 ```{r}
-l1_8.8_wf_performance <- collect_metrics(l1_8.8_wf_fit)
-l1_8.8_wf_performance
+l1_86_wf_performance <- collect_metrics(l1_86_wf_fit)
+l1_86_wf_performance
+```
+
+```{r}
+l1_86_wf_fit_preds <- collect_predictions(l1_86_wf_fit)
+```
+
+```{r}
+l1_86_wf_fit_preds %>% 
+  group_by(id) %>% 
+  roc_curve(truth = c1, .pred_OFFENSE) %>% 
+  autoplot()
 ```
 
 ### Show The Best
 
 ```{r}
-select_best(l1_8.8_wf_fit)
+select_best(l1_86_wf_fit)
 ```
 
 ### Select The Best
 
 ```{r}
-chosen_auc_l1_8.8_wf_fit <-
-l1_8.8_wf_fit %>%
+chosen_auc_l1_86_wf_fit <-
+l1_86_wf_fit %>%
 select_by_one_std_err(metric = "roc_auc", -penalty)
-chosen_auc_l1_8.8_wf_fit
+chosen_auc_l1_86_wf_fit
 ```
 
-## 8.9 Ridge-Regression-L2 With TF-IDF
+## 8.7 Ridge-Regression-L2 With TF-IDF
 
 ### L2-Model
 
 ```{r}
-l2_8.9_mod <- logistic_reg(penalty = tune(), mixture = 0) %>%
+l2_87_mod <- logistic_reg(penalty = tune(), mixture = 0) %>%
 set_engine("glmnet") %>%
 set_mode("classification")
-l2_8.9_mod
+l2_87_mod
 ```
 
 ### Define The Workflow
 
 ```{r}
-l2_8.9_wf <-workflow() %>%
+l2_87_wf <-workflow() %>%
 add_recipe(rec4) %>%
-add_model(l2_8.9_mod)
-l2_8.9_wf
+add_model(l2_87_mod)
+l2_87_wf
 ```
 
 ### Resampling & Model Quality
 
 ```{r}
 options(mc.cores = parallel::detectCores())
-l2_8.9_wf_fit <- tune_grid(
-l2_8.9_wf,
+l2_87_wf_fit <- tune_grid(
+l2_87_wf,
 folds,
 grid = lambda_grid,
 control = control_resamples(save_pred = TRUE)
 )
 ```
 
+### Model Performance
+
 ```{r}
-l2_8.9_wf_performance <- collect_metrics(l2_8.9_wf_fit)
-l2_8.9_wf_performance
+l2_87_wf_performance <- collect_metrics(l2_87_wf_fit)
+l2_87_wf_performance
+```
+
+```{r}
+l2_87_wf_fit_preds <- collect_predictions(l2_87_wf_fit)
+```
+
+```{r}
+l2_87_wf_fit_preds %>% 
+  group_by(id) %>% 
+  roc_curve(truth = c1, .pred_OFFENSE) %>% 
+  autoplot()
 ```
 
 ### Select The Best
 
 ```{r}
-chosen_auc_l2_8.9_wf_fit <-
-l2_8.9_wf_fit %>%
+chosen_auc_l2_87_wf_fit <-
+l2_87_wf_fit %>%
 select_by_one_std_err(metric = "roc_auc", -penalty)
-chosen_auc_l2_8.9_wf_fit
+chosen_auc_l2_87_wf_fit
 ```
 
-
-
+```{r}
+toc()
+```
 
 # 9. Predictions
