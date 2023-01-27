@@ -9,7 +9,9 @@ image: "image.jpg"
 
 # 1. Preliminary Note
 
-For this analysis we use the dataset from @data/0B5VML_2019 out of the zip archive @data/0B5VML/XIUWJ7_2019. The data are licensed according to Attribution 4.0 International (CC-BY-4.0). The used wordembeddings are from @grave2018learning. The data are licensed according to Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0). The picture, that is used is from @bildquelle.
+For this analysis we use the dataset from @data/0B5VML_2019 out of the zip archive @data/0B5VML/XIUWJ7_2019. The data are licensed according to Attribution 4.0 International (CC-BY-4.0).
+The used wordembeddings are from @grave2018learning. The data are licensed according to Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0).
+The picture, that is used is from <a href="https://pixabay.com/de/users/geralt-9301/">geralt</a> at auf <a href="https://pixabay.com/de//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1476780">Pixabay</a.
 
 # 2. Load The Packages
 
@@ -146,9 +148,8 @@ recipes::bake(new_data = NULL)
 
 After fitting all the models I have decided to not fit the easy word embedding recipe (rec2)! The reason for this decision is, because of the analysis run-time! We have a large amount of data and extensive recipes, so when I raise the resamples for the prediction, R Studio quits the session.
 
--   training: v = 1, folds = 2
-
--   prediction: v = 2, folds = 5
+-   [training:]{.underline} v = 3, repeats = 1
+-   [prediction:]{.underline} v = 5, repeats = 2
 
 ```{r}
 #rec2 <-
@@ -267,8 +268,8 @@ I have decided to go with the V-Fold-Cross-Validation, because of the time. We h
 
 ```{r}
 folds <- vfold_cv(data = d_train,
-v = 3,
-repeats = 1,
+v = 5,
+repeats = 2,
 strata = c1)
 ```
 
@@ -281,10 +282,6 @@ lambda_grid <- grid_regular(penalty(), levels = 30)
 # 8. Build the Models
 
 ## 8.1 Null Model
-
-```{r}
-tic()
-```
 
 ```{r}
 mod0 <- null_model() %>%
@@ -355,12 +352,14 @@ l1_82_wf
 
 ```{r}
 options(mc.cores = parallel::detectCores())
+tic()
 l1_82_wf_fit <- tune_grid(
 l1_82_wf,
 folds,
 grid = lambda_grid,
 control = control_resamples(save_pred = TRUE)
 )
+toc()
 ```
 
 ### Model Performance
@@ -417,6 +416,7 @@ l2_83_wf
 ### Resampling & Model Quality
 
 ```{r}
+tic()
 options(mc.cores = parallel::detectCores())
 l2_83_wf_fit <- tune_grid(
 l2_83_wf,
@@ -424,10 +424,7 @@ folds,
 grid = lambda_grid,
 control = control_resamples(save_pred = TRUE)
 )
-```
-
-```{r}
-collect_metrics(l2_83_wf_fit)
+toc()
 ```
 
 ### Model Performance
@@ -480,6 +477,7 @@ l1_84_wf
 ### Resampling & Model Quality
 
 ```{r}
+tic()
 options(mc.cores = parallel::detectCores())
 l1_84_wf_fit <- tune_grid(
 l1_84_wf,
@@ -487,10 +485,7 @@ folds,
 grid = lambda_grid,
 control = control_resamples(save_pred = TRUE)
 )
-```
-
-```{r}
-collect_metrics(l1_84_wf_fit)
+toc()
 ```
 
 ### Model Performance
@@ -608,6 +603,7 @@ l1_86_wf
 ### Resampling & Model Quality
 
 ```{r}
+tic()
 options(mc.cores = parallel::detectCores())
 l1_86_wf_fit <- tune_grid(
 l1_86_wf,
@@ -615,6 +611,7 @@ folds,
 grid = lambda_grid,
 control = control_resamples(save_pred = TRUE)
 )
+toc()
 ```
 
 ### Model Performance
@@ -673,6 +670,7 @@ l2_87_wf
 ### Resampling & Model Quality
 
 ```{r}
+tic()
 options(mc.cores = parallel::detectCores())
 l2_87_wf_fit <- tune_grid(
 l2_87_wf,
@@ -680,6 +678,7 @@ folds,
 grid = lambda_grid,
 control = control_resamples(save_pred = TRUE)
 )
+toc()
 ```
 
 ### Model Performance
