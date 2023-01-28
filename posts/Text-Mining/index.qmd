@@ -1,7 +1,7 @@
 ---
 title: "Text Mining"
 author: "Sabrina Michl"
-date: "2023-01-27"
+date: "2023-01-31"
 categories: [code, analysis]
 bibliography: ref.bib
 image: "image.jpg"
@@ -11,7 +11,9 @@ image: "image.jpg"
 
 For this analysis we use the dataset from @data/0B5VML_2019 out of the zip archive @data/0B5VML/XIUWJ7_2019. The data are licensed according to Attribution 4.0 International (CC-BY-4.0).
 The used wordembeddings are from @grave2018learning. The data are licensed according to Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0).
-The picture, that is used is from <a href="https://pixabay.com/de/users/geralt-9301/">geralt</a> at auf <a href="https://pixabay.com/de//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1476780">Pixabay</a.
+
+The picture, is from <a href="https://pixabay.com/de/users/geralt-9301/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=7691355">Gerd Altmann</a> 
+at <a href="https://pixabay.com/de//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=7691355">Pixabay</a>
 
 # 2. Load The Packages
 
@@ -273,6 +275,8 @@ repeats = 2,
 strata = c1)
 ```
 
+  > Use cross-validation to avoid overfitting.
+
 # 7. Build the Penalty-Grid
 
 ```{r}
@@ -392,6 +396,7 @@ l1_82_wf_fit %>%
 select_by_one_std_err(metric = "roc_auc", -penalty)
 chosen_auc_l1_82_wf_fit
 ```
+
 
 ## 8.3 Ridge-Regression-L2 With TF-IDF
 
@@ -515,6 +520,11 @@ select_by_one_std_err(metric = "roc_auc", -penalty)
 chosen_auc_l1_84_wf_fit
 ```
 
+```{r}
+sens()
+```
+
+
 ## 8.5 Ridge-Regression-L2 with TF-IDF
 
 ### L2-Model
@@ -631,7 +641,9 @@ l1_86_wf_fit_preds %>%
   roc_curve(truth = c1, .pred_OFFENSE) %>% 
   autoplot()
 ```
-
+ 
+ So we can see a higher sensitivity and a high specificity
+ 
 ### Show The Best
 
 ```{r}
@@ -706,6 +718,20 @@ chosen_auc_l2_87_wf_fit <-
 l2_87_wf_fit %>%
 select_by_one_std_err(metric = "roc_auc", -penalty)
 chosen_auc_l2_87_wf_fit
+```
+
+# 9. Decide For A Model
+```{r}
+collect_metrics(l1_82_wf_fit) %>% 
+  bind_rows(collect(l2_83_wf_fit)) %>% 
+  bind_rows(collect(l1_84_wf_fit)) %>% 
+  bind_rows(collect(l2_85_wf_fit)) %>% 
+  bind_rows(collect(l1_86_wf_fit)) %>% 
+  bind_rows(collect(l2_87_wf_fit)) %>% 
+  filter(.metric == "roc_auc") %>% 
+  mutate(model = "logistic_reg") %>% 
+  select(id, model, everything()) %>% 
+  arrange(-(mean))
 ```
 
 
