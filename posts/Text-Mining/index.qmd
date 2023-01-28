@@ -708,8 +708,5 @@ select_by_one_std_err(metric = "roc_auc", -penalty)
 chosen_auc_l2_87_wf_fit
 ```
 
-```{r}
-toc()
-```
 
 # 9. Predictions
