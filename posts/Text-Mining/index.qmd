@@ -1,7 +1,7 @@
 ---
 title: "Text Mining"
 author: "Sabrina Michl"
-date: "2023-01-31"
+date: "2023-01-28"
 categories: [code, analysis]
 bibliography: ref.bib
 image: "image.jpg"
@@ -118,7 +118,7 @@ theme_minimal()+
 theme(legend.position = "none")
 ```
 
-> We see that to most used word is "lbr". We could inspect the dataset way deeper, e. g. do a manual sentimentanalysis or do a lemmatization or stem the words. But we will have a look to these types in the different machine learning algorithm now.
+> We see that to most used word is "lbr". We could inspect the dataset way deeper, e. g. do a manual sentimentanalysis or do a lemmatization or stem the words. But we will have a look to these types in the different machine learning algorithms now.
 
 # 5. Preparation
 
@@ -195,7 +195,7 @@ word_embedding_text %>%
 bind_cols(words_vecs)
 ```
 
-```{r}
+```{r output=FALSE}
 names(word_embedding_text) <- c("word", paste0("v", sprintf("%03d", 1:301)))
 ```
 
@@ -203,7 +203,7 @@ names(word_embedding_text) <- c("word", paste0("v", sprintf("%03d", 1:301)))
 
 ### Insert the Helperfunctions
 
-We are using the package \[pradadata\] (https://github.com/sebastiansauer/pradadata) from @sebastian_sauer_2018_1996614. The data are licensed according to General Public License 3 (GLP-3).
+We are using the package \[pradadata\] (https://github.com/sebastiansauer/pradadata) by @sebastian_sauer_2018_1996614. The data are licensed according to General Public License 3 (GLP-3).
 
 ```{r}
 data("schimpwoerter", package = "pradadata")
@@ -264,7 +264,7 @@ recipes::bake(new_data = NULL)
 
 # 6. Build Resamples
 
-Because of the run-time, I have decided to go with the v-fold-cross-validation. We have a large amount of data with extremely extensive recipes, so the run-time would be enormous, if we would try another resampling option, e. g. bootstrapping.
+I decided to go with the v-fold-cross-validation as it is rather time-efficient. We have a large amount of data with extremely extensive recipes, so the run-time would be enormous, if we would try another resampling option, e.g. bootstrapping.
 
 ```{r}
 folds <- vfold_cv(data = d_train,

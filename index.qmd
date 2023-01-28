@@ -1,5 +1,5 @@
 ---
-title: "Text Mining for AWM"
+title: "The World of Data Science"
 listing:
   contents: posts
   sort: "date desc"
