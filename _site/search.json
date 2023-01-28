@@ -4,14 +4,14 @@
     "href": "about.html",
     "title": "About Sabrina",
     "section": "",
-    "text": "Hello, my name is Sabrina Michl and this is my new blog about Data Science.\nCurrently I am studying business and media psychology and my major courses are Data Science (suprise) and New Work.\nWith this blog I want to give you insights from the fascinating world of data science.\nI’m happy to answer any questions you may have and I’m happy to receive links on LinkedIn.\nHave fun & do not hesitate if you have any question.\nKind regards, Sabrina 😊"
+    "text": "Hello, my name is Sabrina Michl and this is my new blog about Data Science.\nCurrently I am studying business and media psychology and my major courses are Data Science (suprise) and New Work.\nWith this blog I want to give you insights from the fascinating world of data science.\nI’m happy to answer any questions you may have and I’m happy to receive links on LinkedIn.\nHave fun & do not hesitate to get in touch.\nKind regards, Sabrina 😊"
   },
   {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Text Mining for AWM",
     "section": "",
-    "text": "Text Mining\n\n\n\n\n\n\n\n\n\n\n \n\n\n\n\n  \n\n\n\n\nText Mining\n\n\n\n\n\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 27, 2023\n\n\nSabrina Michl\n\n\n\n\n\n\n  \n\n\n\n\nPost With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 24, 2023\n\n\nHarlow Malloc\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nJan 21, 2023\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+    "text": "Text Mining\n\n\n\n\n\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 31, 2023\n\n\nSabrina Michl\n\n\n\n\n\n\n  \n\n\n\n\nText Mining\n\n\n\n\n\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 31, 2023\n\n\nSabrina Michl\n\n\n\n\n\n\n  \n\n\n\n\nPost With Code\n\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 24, 2023\n\n\nHarlow Malloc\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nJan 21, 2023\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/post-with-code/index.html",
@@ -173,5 +173,33 @@
     "title": "Text Mining",
     "section": "8.7 Ridge-Regression-L2 With TF-IDF",
     "text": "8.7 Ridge-Regression-L2 With TF-IDF\n\nL2-Model\n\nl2_87_mod <- logistic_reg(penalty = tune(), mixture = 0) %>%\nset_engine(\"glmnet\") %>%\nset_mode(\"classification\")\nl2_87_mod\n\nLogistic Regression Model Specification (classification)\n\nMain Arguments:\n  penalty = tune()\n  mixture = 0\n\nComputational engine: glmnet \n\n\n\n\nDefine The Workflow\n\nl2_87_wf <-workflow() %>%\nadd_recipe(rec4) %>%\nadd_model(l2_87_mod)\nl2_87_wf\n\n== Workflow ====================================================================\nPreprocessor: Recipe\nModel: logistic_reg()\n\n-- Preprocessor ----------------------------------------------------------------\n10 Recipe Steps\n\n* step_text_normalization()\n* step_mutate()\n* step_mutate()\n* step_mutate()\n* step_mutate()\n* step_textfeature()\n* step_tokenize()\n* step_stopwords()\n* step_stem()\n* step_tfidf()\n\n-- Model -----------------------------------------------------------------------\nLogistic Regression Model Specification (classification)\n\nMain Arguments:\n  penalty = tune()\n  mixture = 0\n\nComputational engine: glmnet \n\n\n\n\nResampling & Model Quality\n\noptions(mc.cores = parallel::detectCores())\nl2_87_wf_fit <- tune_grid(\nl2_87_wf,\nfolds,\ngrid = lambda_grid,\ncontrol = control_resamples(save_pred = TRUE)\n)\n\n\n\nModel Performance\n\nl2_87_wf_performance <- collect_metrics(l2_87_wf_fit)\nl2_87_wf_performance\n\n# A tibble: 60 x 7\n    penalty .metric  .estimator  mean     n std_err .config              \n      <dbl> <chr>    <chr>      <dbl> <int>   <dbl> <chr>                \n 1 1   e-10 accuracy binary     0.707     3 0.00306 Preprocessor1_Model01\n 2 1   e-10 roc_auc  binary     0.765     3 0.00667 Preprocessor1_Model01\n 3 2.21e-10 accuracy binary     0.707     3 0.00306 Preprocessor1_Model02\n 4 2.21e-10 roc_auc  binary     0.765     3 0.00667 Preprocessor1_Model02\n 5 4.89e-10 accuracy binary     0.707     3 0.00306 Preprocessor1_Model03\n 6 4.89e-10 roc_auc  binary     0.765     3 0.00667 Preprocessor1_Model03\n 7 1.08e- 9 accuracy binary     0.707     3 0.00306 Preprocessor1_Model04\n 8 1.08e- 9 roc_auc  binary     0.765     3 0.00667 Preprocessor1_Model04\n 9 2.40e- 9 accuracy binary     0.707     3 0.00306 Preprocessor1_Model05\n10 2.40e- 9 roc_auc  binary     0.765     3 0.00667 Preprocessor1_Model05\n# ... with 50 more rows\n\n\n\nl2_87_wf_fit_preds <- collect_predictions(l2_87_wf_fit)\n\n\nl2_87_wf_fit_preds %>% \n  group_by(id) %>% \n  roc_curve(truth = c1, .pred_OFFENSE) %>% \n  autoplot()\n\n\n\n\n\n\nSelect The Best\n\nchosen_auc_l2_87_wf_fit <-\nl2_87_wf_fit %>%\nselect_by_one_std_err(metric = \"roc_auc\", -penalty)\nchosen_auc_l2_87_wf_fit\n\n# A tibble: 1 x 9\n  penalty .metric .estimator  mean     n std_err .config            .best .bound\n    <dbl> <chr>   <chr>      <dbl> <int>   <dbl> <chr>              <dbl>  <dbl>\n1       1 roc_auc binary     0.765     3 0.00667 Preprocessor1_Mod~ 0.765  0.758\n\n\n\ntoc()\n\n2836.8 sec elapsed"
+  },
+  {
+    "objectID": "posts/Text-Mining_NEW/index.html",
+    "href": "posts/Text-Mining_NEW/index.html",
+    "title": "Text Mining",
+    "section": "",
+    "text": "For this analysis we use the dataset from Wiegand (2019a) out of the zip archive Wiegand (2019b). The data are licensed according to Attribution 4.0 International (CC-BY-4.0). The used wordembeddings are from Grave et al. (2018). The data are licensed according to Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0).\nThe picture to this post from the welcome page, is from Gerd Altmann at Pixabay"
+  },
+  {
+    "objectID": "posts/Text-Mining_NEW/index.html#train-dataset",
+    "href": "posts/Text-Mining_NEW/index.html#train-dataset",
+    "title": "Text Mining",
+    "section": "3.1 Train Dataset",
+    "text": "3.1 Train Dataset\n\nd_train <- read_tsv(\"C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.training.txt\", col_names = FALSE)\n\n\nRename Columns\n\nnames(d_train) <- c(\"text\", \"c1\", \"c2\")\n\n\n\nAdd ID Column\n\nd_train <- d_train %>%\nmutate(id = row_number()) %>%\nselect(id, everything())"
+  },
+  {
+    "objectID": "posts/Text-Mining_NEW/index.html#test-dataset",
+    "href": "posts/Text-Mining_NEW/index.html#test-dataset",
+    "title": "Text Mining",
+    "section": "3.2 Test Dataset",
+    "text": "3.2 Test Dataset\n\nd_test <- read_tsv(\"C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.test.txt\", col_names = FALSE)\n\n\nRename Columns\n\nnames(d_test) <- c(\"text\", \"c1\", \"c2\")\n\n\n\nAdd ID Column\n\nd_test <- d_test %>%\nmutate(id = row_number()) %>%\nselect(id, everything())"
+  },
+  {
+    "objectID": "posts/Text-Mining_NEW/index.html#show-the-important-words",
+    "href": "posts/Text-Mining_NEW/index.html#show-the-important-words",
+    "title": "Text Mining",
+    "section": "Show The Important Words",
+    "text": "Show The Important Words\n\ntrain_toc2 <- train_toc2 %>%\ncount(token, sort = TRUE)\n\n\nPlot\n\ntrain_toc2 %>%\nslice_head(n=20) %>%\nggplot()+\naes(y=reorder(factor(token), n), x = n, color = token)+\ngeom_col(aes(fill = token, alpha = 2.5)) +\nggtitle(\"The most used words\") +\nylab(\"token\")+\nxlab(\"quantity\")+\ntheme_minimal()+\ntheme(legend.position = \"none\")"
   }
 ]
