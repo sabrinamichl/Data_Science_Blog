@@ -522,3 +522,37 @@ control = control_resamples(save_pred = TRUE)
 )
 ```
 
+### Model Performance
+
+```{r}
+l2_87_wf_performance <- collect_metrics(l2_87_wf_fit)
+l2_87_wf_performance
+```
+
+```{r}
+l2_87_wf_fit_preds <- collect_predictions(l2_87_wf_fit)
+```
+
+```{r}
+l2_87_wf_fit_preds %>% 
+  group_by(id) %>% 
+  roc_curve(truth = c1, .pred_OFFENSE) %>% 
+  autoplot()
+```
+
+Here you can see a good balanced model, which shows a good sensitivity and specificity, with a slight tendency towards sensitivity = 1.
+
+### Select The Best
+
+```{r}
+chosen_auc_l2_87_wf_fit <-
+l2_87_wf_fit %>%
+select_by_one_std_err(metric = "roc_auc", -penalty)
+chosen_auc_l2_87_wf_fit
+```
+
+```{r}
+conf_mat_resampled(l2_87_wf_fit, tidy = FALSE, parameter = select_best(l2_87_wf_fit)) %>% 
+  autoplot(type = "heatmap") 
+```
+
