@@ -17,7 +17,7 @@ about:
 
 Hello, my name is **Sabrina Michl** and this is my new **blog about Data Science**.
 
-Currently I am studying **business and media psychology** and my major courses are **Data Science** (suprise) **and New Work**.
+Currently I am studying **business and media psychology** and my major courses are **Data Science** (surprise) **and New Work**.
 
 With this blog I want to give you insights from the **fascinating world of data science**.
 

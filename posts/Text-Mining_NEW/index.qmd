@@ -80,7 +80,7 @@ unnest_tokens(output = token, input = text)
 train_toc
 ```
 
-> First we tokenize the dataset d_train.
+> First tokenize the dataset d_train.
 
 ## 4.1 Insert `Stopwords_de`
 
@@ -148,10 +148,7 @@ recipes::bake(new_data = NULL)
 
 ## 5.2 Define Recipe - rec2 - word embedding
 
-After fitting all the models with the training-resample, I have decided to not fit the easy word embedding recipe (rec2), because of the long computing time! We have a large amount of data and extensive recipes, so when I raise the resamples for the prediction, R Studio quits the session. And because of that I only do a prediction-resample of 3 folds and 2 repetitions.
-
--   [training:]{.underline} v = 2, repeats = 1
--   [prediction:]{.underline} v = 3, repeats = 2
+After fitting all the models with the training-resample, I have decided to not fit the easy word embedding recipe (rec2), because of the long computing time!
 
 ```{r}
 #rec2 <-
@@ -205,7 +202,7 @@ names(word_embedding_text) <- c("word", paste0("v", sprintf("%03d", 1:301)))
 
 ### Insert The Helperfunctions
 
-We are using the package \[pradadata\] (https://github.com/sebastiansauer/pradadata) by @sebastian_sauer_2018_1996614. The data are licensed according to General Public License 3 (GLP-3).
+We are using the package [pradadata](https://github.com/sebastiansauer/pradadata) by @sebastian_sauer_2018_1996614. The data are licensed according to General Public License 3 (GLP-3).
 
 ```{r}
 data("schimpwoerter", package = "pradadata")
@@ -271,7 +268,7 @@ I decided to go with the v-fold-cross-validation as it is rather time-efficient.
 ```{r}
 folds <- vfold_cv(data = d_train,
 v = 3,
-repeats = 2,
+repeats = 1,
 strata = c1)
 ```
 
@@ -449,12 +446,14 @@ l1_86_wf
 
 ```{r}
 options(mc.cores = parallel::detectCores())
+tic()
 l1_86_wf_fit <- tune_grid(
 l1_86_wf,
 folds,
 grid = lambda_grid,
 control = control_resamples(save_pred = TRUE)
 )
+toc()
 ```
 
 ### Model Performance
@@ -558,3 +557,37 @@ conf_mat_resampled(l2_87_wf_fit, tidy = FALSE, parameter = select_best(l2_87_wf_
 ```
 
 # 9. Prediction
+
+## Workflow finalisieren
+
+```{r}
+l1_86_wf_final <- 
+  l1_86_wf %>% 
+  finalize_workflow(select_best(l1_86_wf_fit, metric = "roc_auc"))
+```
+
+## Workflow im Train-Datensatz fitten
+
+```{r}
+options(mc.cores = parallel::detectCores())
+fit_train <- l1_86_wf_final %>% 
+  fit(d_train)
+```
+
+## Vorhersagen auf Test-Datensatz anwenden
+
+```{r}
+fit_test <- fit_train %>% 
+  predict(d_test)
+```
+
+```{r}
+fit_test <- fit_test %>% 
+  mutate(id = row_number())
+```
+
+```{r}
+test <- fit_test %>% 
+  full_join(d_test, by = "id")
+```
+
