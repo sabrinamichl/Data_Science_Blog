@@ -1,0 +1,229 @@
+---
+title: "Text Mining Solution"
+author: "Sabrina Michl"
+date: "2023-01-31"
+categories: [code, analysis]
+bibliography: ref.bib
+---
+
+# 1. Preliminary Note
+
+For this analysis we use the dataset from @data/0B5VML_2019 out of the zip archive @data/0B5VML/XIUWJ7_2019. The data are licensed according to Attribution 4.0 International (CC-BY-4.0). The used word embeddings are from @grave2018learning. The data are licensed according to Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0).
+
+# 2. Explaination
+Unfortunately it was not possible to predict in the analysis blogpost.
+The code worked and the system was ready to predict.
+But every time I ran the prediction code I got the same error message in the end "Error: cannot allocate vector of size 672.8 Mb".
+I tried to minimize the complexity of the code, but after 3 new trials with bad luck, I decided to compute the predictions in this separate blogpost.
+
+# 3. Load The Packages
+
+```{r output=FALSE}
+library(tidyverse)
+library(rio)
+library(tidymodels)
+library(tidytext)
+library(textrecipes)
+library(lsa)
+library(discrim)
+library(naivebayes)
+library(tictoc)
+library(fastrtext)
+library(remoji)
+library(tokenizers)
+```
+
+# 4. Load Dataset And Minor Changes
+
+## 4.1 Train Dataset
+
+```{r output=FALSE}
+d_train <- read_tsv("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.training.txt", col_names = FALSE)
+```
+
+### Rename Columns
+
+```{r}
+names(d_train) <- c("text", "c1", "c2")
+```
+
+### Add ID Column
+
+```{r}
+d_train <- d_train %>%
+mutate(id = row_number()) %>%
+select(id, everything())
+```
+
+## 4.2 Test Dataset
+
+```{r output=FALSE}
+d_test <- read_tsv("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.test.txt", col_names = FALSE)
+```
+
+### Rename Columns
+
+```{r}
+names(d_test) <- c("text", "c1", "c2")
+```
+
+### Add ID Column
+
+```{r}
+d_test <- d_test %>%
+mutate(id = row_number()) %>%
+select(id, everything())
+```
+
+# 5. Insert The Predefined List
+
+```{r}
+out_file_model <- "C:/Users/sapi-/OneDrive - Hochschule für Angewandte Wissenschaften Ansbach/Desktop/AWM/angewandte Wirtschats- und Medienpsychologie/5. Semester/Word_Embedding/de.300.bin"
+```
+
+```{r}
+file.exists(out_file_model)
+```
+
+```{r}
+fasttext_model <- load_model(out_file_model)
+dictionary <- get_dictionary(fasttext_model)
+get_word_vectors(fasttext_model, c("menschen")) %>% `[`(1:10)
+```
+
+```{r}
+print(head(dictionary, 10))
+```
+
+```{r}
+word_embedding_text <- tibble(word = dictionary)
+```
+
+```{r}
+options(mc.cores = parallel::detectCores())
+words_vecs <- get_word_vectors(fasttext_model)
+```
+
+```{r output=FALSE}
+word_embedding_text <-
+word_embedding_text %>%
+bind_cols(words_vecs)
+```
+
+```{r output=FALSE}
+names(word_embedding_text) <- c("word", paste0("v", sprintf("%03d", 1:301)))
+```
+
+# 6. Insert The Helperfunctions
+
+We are using the package [pradadata](https://github.com/sebastiansauer/pradadata) by @sebastian_sauer_2018_1996614. The data are licensed according to General Public License 3 (GLP-3).
+
+```{r}
+data("schimpwoerter", package = "pradadata")
+data("sentiws", package = "pradadata")
+data("wild_emojis", package = "pradadata")
+source("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/helper/helper_funs.R")
+```
+
+# 7. Define Recipe - rec4 - TF-IDF
+```{r}
+rec4 <-
+recipe(c1 ~., data = select(d_train, text, c1, id)) %>%
+update_role(id, new_role = "id") %>% 
+step_text_normalization(text) %>%
+step_mutate(emo_count = map_int(text, ~count_lexicon(.x, sentiws$word))) %>%
+step_mutate(schimpf_count = map_int(text, ~count_lexicon(.x, schimpfwoerter$word))) %>%
+step_mutate(wild_emojis = map_int(text, ~count_lexicon(.x, wild_emojis$emoji))) %>%
+step_mutate(text_copy = text) %>%
+step_textfeature(text_copy) %>%
+step_tokenize(text) %>%
+step_stopwords(text, language = "de", stopword_source = "snowball") %>%
+step_stem(text) %>%
+step_tfidf(text)
+```
+
+```{r}
+rec4_prep <- rec4 %>%
+prep() %>%
+recipes::bake(new_data = NULL)
+```
+
+# 8. Build Resamples
+
+```{r}
+folds <- vfold_cv(data = d_train,
+v = 3,
+repeats = 1,
+strata = c1)
+```
+
+# 9. Build the Penalty-Grid
+
+```{r}
+lambda_grid <- grid_regular(penalty(), levels = 20)
+```
+
+## 10. Lasso-L1 With TF-IDF
+
+### L1-Model
+
+```{r}
+l1_86_mod <- logistic_reg(penalty = tune(), mixture = 1) %>%
+set_engine("glmnet") %>%
+set_mode("classification")
+l1_86_mod
+```
+
+### Define The Workflow
+
+```{r}
+l1_86_wf <-workflow() %>%
+add_recipe(rec4) %>%
+add_model(l1_86_mod)
+l1_86_wf
+```
+
+### Resampling & Model Quality
+
+```{r}
+options(mc.cores = parallel::detectCores())
+tic()
+l1_86_wf_fit <- tune_grid(
+l1_86_wf,
+folds,
+grid = lambda_grid,
+control = control_resamples(save_pred = TRUE)
+)
+toc()
+```
+
+### Model Performance
+
+```{r}
+l1_86_wf_performance <- collect_metrics(l1_86_wf_fit)
+l1_86_wf_performance
+```
+
+```{r}
+l1_86_wf_fit_preds <- collect_predictions(l1_86_wf_fit)
+```
+
+```{r}
+l1_86_wf_fit_preds %>% 
+  group_by(id) %>% 
+  roc_curve(truth = c1, .pred_OFFENSE) %>% 
+  autoplot()
+```
+
+### Select The Best
+
+```{r}
+chosen_auc_l1_86_wf_fit <-
+l1_86_wf_fit %>%
+select_by_one_std_err(metric = "roc_auc", -penalty)
+chosen_auc_l1_86_wf_fit
+```
+
+
+
+
