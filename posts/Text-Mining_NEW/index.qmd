@@ -556,3 +556,5 @@ conf_mat_resampled(l2_87_wf_fit, tidy = FALSE, parameter = select_best(l2_87_wf_
   autoplot(type = "heatmap") 
 ```
 
+# 9. Predictions
+Because of troubles with R Studio, you will find the predictions [here](https://world-of-datascience.netlify.app/posts/text-mining_solutions/)
