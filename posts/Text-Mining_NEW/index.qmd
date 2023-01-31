@@ -9,9 +9,7 @@ image: "image.jpg"
 
 # 1. Preliminary Note
 
-For this analysis we use the dataset from @data/0B5VML_2019 out of the zip archive @data/0B5VML/XIUWJ7_2019. The data are licensed according to Attribution 4.0 International (CC-BY-4.0). The used word embeddings are from @grave2018learning. The data are licensed according to Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0).
-
-The picture to this post from the welcome page, is from <a href="https://pixabay.com/de/users/geralt-9301/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=7691355">Gerd Altmann</a> at <a href="https://pixabay.com/de//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=7691355">Pixabay</a>
+For this analysis we use the dataset from @data/0B5VML_2019 out of the zip archive @data/0B5VML/XIUWJ7_2019. The data are licensed according to Attribution 4.0 International (CC-BY-4.0). The picture to this post from the welcome page, is from <a href="https://pixabay.com/de/users/geralt-9301/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=7691355">Gerd Altmann</a> at <a href="https://pixabay.com/de//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=7691355">Pixabay</a>
 
 # 2. Load The Packages
 
@@ -48,26 +46,6 @@ names(d_train) <- c("text", "c1", "c2")
 
 ```{r}
 d_train <- d_train %>%
-mutate(id = row_number()) %>%
-select(id, everything())
-```
-
-## 3.2 Test Dataset
-
-```{r output=FALSE}
-d_test <- read_tsv("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.test.txt", col_names = FALSE)
-```
-
-### Rename Columns
-
-```{r}
-names(d_test) <- c("text", "c1", "c2")
-```
-
-### Add ID Column
-
-```{r}
-d_test <- d_test %>%
 mutate(id = row_number()) %>%
 select(id, everything())
 ```
@@ -113,14 +91,14 @@ slice_head(n=20) %>%
 ggplot()+
 aes(y=reorder(factor(token), n), x = n, color = token)+
 geom_col(aes(fill = token, alpha = 2.5)) +
-ggtitle("The most used words") +
-ylab("token")+
-xlab("quantity")+
+ggtitle("The Most Used Words") +
+ylab("Token")+
+xlab("Quantity")+
 theme_minimal()+
 theme(legend.position = "none")
 ```
 
-> We see that to most used word is "lbr". We could inspect the dataset way deeper, e.g. do a manual sentimentanalysis, do a lemmatization or stem the words. But we will have a look at these processes in the different machine learning algorithms following now.
+> We see that the most used word is "lbr". We could inspect the dataset way deeper, e.g. do a manual sentimentanalysis, do a lemmatization or stem the words. But we will have a look at these processes in the different machine learning algorithms following now.
 
 # 5. Preparation
 
@@ -148,7 +126,7 @@ recipes::bake(new_data = NULL)
 
 ## 5.2 Define Recipe - rec2 - word embedding
 
-After fitting all the models with the training-resample, I have decided to not fit the easy word embedding recipe (rec2), because of the long computing time!
+Due to the long calculation time and the relatively poor roc_auc values (with the training resample - v = 2, repeats = 1) , I decided not to perform the calculation for the analysis.
 
 ```{r}
 #rec2 <-
@@ -159,7 +137,22 @@ After fitting all the models with the training-resample, I have decided to not f
 #step_word_embeddings(text, embeddings = word_embedding_text)
 ```
 
+## 5.3 Define Recipe - rec3 - Word Embeddings
+
+### Insert The Helperfunctions
+
+We are using the package [pradadata](https://github.com/sebastiansauer/pradadata) by @sebastian_sauer_2018_1996614. The data are licensed according to General Public License 3 (GLP-3).
+
+```{r}
+data("schimpwoerter", package = "pradadata")
+data("sentiws", package = "pradadata")
+data("wild_emojis", package = "pradadata")
+source("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/helper/helper_funs.R")
+```
+
 ### Insert The Predefined List
+
+The used word embeddings are from @grave2018learning. The data are licensed according to Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0).
 
 ```{r}
 out_file_model <- "C:/Users/sapi-/OneDrive - Hochschule für Angewandte Wissenschaften Ansbach/Desktop/AWM/angewandte Wirtschats- und Medienpsychologie/5. Semester/Word_Embedding/de.300.bin"
@@ -196,19 +189,6 @@ bind_cols(words_vecs)
 
 ```{r output=FALSE}
 names(word_embedding_text) <- c("word", paste0("v", sprintf("%03d", 1:301)))
-```
-
-## 5.3 Define Recipe - rec3 - Word Embeddings
-
-### Insert The Helperfunctions
-
-We are using the package [pradadata](https://github.com/sebastiansauer/pradadata) by @sebastian_sauer_2018_1996614. The data are licensed according to General Public License 3 (GLP-3).
-
-```{r}
-data("schimpwoerter", package = "pradadata")
-data("sentiws", package = "pradadata")
-data("wild_emojis", package = "pradadata")
-source("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/helper/helper_funs.R")
 ```
 
 ### rec3
@@ -263,19 +243,19 @@ recipes::bake(new_data = NULL)
 
 # 6. Build Resamples
 
-I decided to go with the v-fold-cross-validation as it is rather time-efficient. We have a large amount of data with extremely extensive recipes, so the run-time would be enormous, if we would try another resampling option, e.g. bootstrapping.
+I chose the v-fold-cross-validation as it is rather time-efficient. Other resampling methods are for example bootstrapping, leave-one-out-cross-validation or hold-out-cross-validation.
 
 ```{r}
 folds <- vfold_cv(data = d_train,
 v = 3,
-repeats = 1,
+repeats = 2,
 strata = c1)
 ```
 
 # 7. Build the Penalty-Grid
 
 ```{r}
-lambda_grid <- grid_regular(penalty(), levels = 20)
+lambda_grid <- grid_regular(penalty(), levels = 25)
 ```
 
 # 8. Build the Models
@@ -336,7 +316,7 @@ l2_83_wf_fit_preds %>%
   autoplot()
 ```
 
-> The model is slightly better compared to the previous one. Which is also reflected in the shape. It shows a tendency towards sensivity = 1.
+> There is a small difference between both repetitions, especially in the area of sensitivity = 0.75.
 
 ### Select The Best
 
@@ -347,10 +327,13 @@ select_by_one_std_err(metric = "roc_auc", -penalty)
 chosen_auc_l2_83_wf_fit
 ```
 
+### Positive Predictive Value
+
 ```{r}
-conf_mat_resampled(l2_83_wf_fit, tidy = FALSE, parameter = select_best(l2_83_wf_fit)) %>% 
-  autoplot(type = "heatmap") 
+ppv(l2_83_wf_fit_preds, truth = factor(c1), estimate = .pred_class)
 ```
+
+> So this model has an estimated ppv of 64,2 %.
 
 ## 8.4 Lasso-L1 With Word Embeddings
 
@@ -406,7 +389,7 @@ l2_85_wf_fit_preds %>%
   autoplot()
 ```
 
-> This is similar to `l2_83_wf_fit.` But this one is more balanced in the center!
+> There is almost no discernible difference between the two repetitions.
 
 ### Select The Best
 
@@ -421,6 +404,14 @@ chosen_auc_l2_85_wf_fit
 conf_mat_resampled(l2_85_wf_fit, tidy = FALSE, parameter = select_best(l2_85_wf_fit)) %>% 
   autoplot(type = "heatmap") 
 ```
+
+### Positive Predictive Value
+
+```{r}
+ppv(l2_85_wf_fit_preds, truth = factor(c1), estimate = .pred_class)
+```
+
+> So this model has an estimated ppv of 65,3 %, so it is a little bit better than the model before.
 
 ## 8.6 Lasso-L1 With TF-IDF
 
@@ -474,7 +465,7 @@ l1_86_wf_fit_preds %>%
   autoplot()
 ```
 
-> Here you can see a good balanced model, which shows a good sensitivity and specificity!
+> It looks like `Repeat1` is a little bit better because the line is bent more towards sensitivity.
 
 ```{r}
 conf_mat_resampled(l1_86_wf_fit, tidy = FALSE, parameter = select_best(l1_86_wf_fit)) %>% 
@@ -489,6 +480,14 @@ l1_86_wf_fit %>%
 select_by_one_std_err(metric = "roc_auc", -penalty)
 chosen_auc_l1_86_wf_fit
 ```
+
+### Positive Predictive Value
+
+```{r}
+ppv(l1_86_wf_fit_preds, truth = factor(c1), estimate = .pred_class)
+```
+
+> The L1-TF-IDF model is until now the best model with a ppv of 65,5 %.
 
 ## 8.7 Ridge-Regression-L2 With TF-IDF
 
@@ -540,8 +539,6 @@ l2_87_wf_fit_preds %>%
   autoplot()
 ```
 
-Here you can see a good balanced model, which shows a good sensitivity and specificity, with a slight tendency towards sensitivity = 1.
-
 ### Select The Best
 
 ```{r}
@@ -556,5 +553,14 @@ conf_mat_resampled(l2_87_wf_fit, tidy = FALSE, parameter = select_best(l2_87_wf_
   autoplot(type = "heatmap") 
 ```
 
+### Positive Predictive Value
+
+```{r}
+ppv(l2_87_wf_fit_preds, truth = factor(c1), estimate = .pred_class)
+```
+
+> So this model has an estimated ppv of 67,6 %. So this one is the best model of all.
+
 # 9. Predictions
-Because of troubles with R Studio, you will find the predictions [here](https://world-of-datascience.netlify.app/posts/text-mining_solutions/)
+
+You will find them [here](https://world-of-datascience.netlify.app/posts/text-mining_solutions/)! 😊
