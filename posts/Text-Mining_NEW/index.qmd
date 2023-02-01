@@ -324,8 +324,6 @@ l2_83_wf_fit_preds %>%
   autoplot()
 ```
 
-> There is a small difference between both repetitions.
-
 ### Select The Best
 
 ```{r}
@@ -466,8 +464,6 @@ l1_86_wf_fit_preds %>%
   roc_curve(truth = c1, .pred_OFFENSE) %>% 
   autoplot()
 ```
-
-> It looks like `Repeat1` is a little bit better because the line is bent more towards sensitivity.
 
 ```{r}
 conf_mat_resampled(l1_86_wf_fit, tidy = FALSE, parameter = select_best(l1_86_wf_fit)) %>% 

@@ -4,7 +4,7 @@ author: "Sabrina Michl"
 date: "2023-01-31"
 categories: [code, analysis]
 bibliography: ref.bib
-image: "image_solution.jpg"
+image: "image_solution.png"
 ---
 
 # 1. Preliminary Note
@@ -14,13 +14,7 @@ International (CC-BY-4.0). The used word embeddings are from @grave2018learning.
 
 The picture to this post from the welcome page, is from <a href="https://pixabay.com/de/users/talhakhalil007-5671515/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4271251">talha khalil</a> auf <a href="https://pixabay.com/de//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4271251">Pixabay</a>
 
-# 2. Explaination
-Unfortunately it was not possible to predict in the analysis blogpost.
-The code worked and the system was ready to predict.
-But every time I ran the prediction code I got the same error message in the end "Error: cannot allocate vector of size 672.8 Mb".
-I tried to minimize the complexity of the code, but after 3 new trials with bad luck, I decided to compute the predictions in this separate blogpost.
-
-# 3. Load The Packages
+# 2. Load The Packages
 
 ```{r output=FALSE}
 library(tidyverse)
@@ -37,9 +31,9 @@ library(remoji)
 library(tokenizers)
 ```
 
-# 4. Load Dataset And Minor Changes
+# 3. Load Dataset And Minor Changes
 
-## 4.1 Train Dataset
+## 3.1 Train Dataset
 
 ```{r output=FALSE}
 d_train <- read_tsv("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.training.txt", col_names = FALSE)
@@ -59,7 +53,7 @@ mutate(id = row_number()) %>%
 select(id, everything())
 ```
 
-## 4.2 Test Dataset
+## 3.2 Test Dataset
 
 ```{r output=FALSE}
 d_test <- read_tsv("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/daten/germeval2018.test.txt", col_names = FALSE)
@@ -79,7 +73,7 @@ mutate(id = row_number()) %>%
 select(id, everything())
 ```
 
-# 5. Insert The Predefined List
+# 4. Insert The Predefined List
 
 ```{r}
 out_file_model <- "C:/Users/sapi-/OneDrive - Hochschule für Angewandte Wissenschaften Ansbach/Desktop/AWM/angewandte Wirtschats- und Medienpsychologie/5. Semester/Word_Embedding/de.300.bin"
@@ -118,7 +112,7 @@ bind_cols(words_vecs)
 names(word_embedding_text) <- c("word", paste0("v", sprintf("%03d", 1:301)))
 ```
 
-# 6. Insert The Helperfunctions
+# 5. Insert The Helperfunctions
 
 We are using the package [pradadata](https://github.com/sebastiansauer/pradadata) by @sebastian_sauer_2018_1996614. The data are licensed according to General Public License 3 (GLP-3).
 
@@ -129,7 +123,7 @@ data("wild_emojis", package = "pradadata")
 source("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/helper/helper_funs.R")
 ```
 
-# 7. Define Recipe - rec4 - TF-IDF
+# 6. Define Recipe - rec4 - TF-IDF
 ```{r}
 rec4 <-
 recipe(c1 ~., data = select(d_train, text, c1, id)) %>%
@@ -152,22 +146,22 @@ prep() %>%
 recipes::bake(new_data = NULL)
 ```
 
-# 8. Build Resamples
+# 7. Build Resamples
 
 ```{r}
 folds <- vfold_cv(data = d_train,
 v = 3,
-repeats = 1,
+repeats = 2,
 strata = c1)
 ```
 
-# 9. Build the Penalty-Grid
+# 8. Build the Penalty-Grid
 
 ```{r}
-lambda_grid <- grid_regular(penalty(), levels = 20)
+lambda_grid <- grid_regular(penalty(), levels = 25)
 ```
 
-## 10. Lasso-L1 With TF-IDF
+## 9. Lasso-L1 With TF-IDF
 
 ### L1-Model
 
