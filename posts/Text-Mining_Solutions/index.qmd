@@ -4,11 +4,15 @@ author: "Sabrina Michl"
 date: "2023-01-31"
 categories: [code, analysis]
 bibliography: ref.bib
+image: "image_solution.jpg"
 ---
 
 # 1. Preliminary Note
 
-For this analysis we use the dataset from @data/0B5VML_2019 out of the zip archive @data/0B5VML/XIUWJ7_2019. The data are licensed according to Attribution 4.0 International (CC-BY-4.0). The used word embeddings are from @grave2018learning. The data are licensed according to Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0).
+For this analysis we use the dataset from @data/0B5VML_2019 out of the zip archive @data/0B5VML/XIUWJ7_2019. The data are licensed according to Attribution 4.0 
+International (CC-BY-4.0). The used word embeddings are from @grave2018learning. The data are licensed according to Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0).
+
+The picture to this post from the welcome page, is from <a href="https://pixabay.com/de/users/talhakhalil007-5671515/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4271251">talha khalil</a> auf <a href="https://pixabay.com/de//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4271251">Pixabay</a>
 
 # 2. Explaination
 Unfortunately it was not possible to predict in the analysis blogpost.

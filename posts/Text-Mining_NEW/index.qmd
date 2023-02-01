@@ -9,7 +9,9 @@ image: "image.jpg"
 
 # 1. Preliminary Note
 
-For this analysis we use the dataset from @data/0B5VML_2019 out of the zip archive @data/0B5VML/XIUWJ7_2019. The data are licensed according to Attribution 4.0 International (CC-BY-4.0). The picture to this post from the welcome page, is from <a href="https://pixabay.com/de/users/geralt-9301/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=7691355">Gerd Altmann</a> at <a href="https://pixabay.com/de//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=7691355">Pixabay</a>
+For this analysis we use the dataset from @data/0B5VML_2019 out of the zip archive @data/0B5VML/XIUWJ7_2019. The data are licensed according to Attribution 4.0 International (CC-BY-4.0).
+
+The picture to this post from the welcome page, is from <a href="https://pixabay.com/de/users/geralt-9301/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=7691355">Gerd Altmann</a> at <a href="https://pixabay.com/de//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=7691355">Pixabay</a>
 
 # 2. Load The Packages
 
@@ -150,7 +152,7 @@ data("wild_emojis", package = "pradadata")
 source("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science_Blog/helper/helper_funs.R")
 ```
 
-### Insert The Predefined List
+### Insert The Predefined Word Embedding List
 
 The used word embeddings are from @grave2018learning. The data are licensed according to Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0).
 
@@ -209,6 +211,8 @@ step_stem(text) %>%
 step_word_embeddings(text, embeddings = word_embedding_text)
 ```
 
+### Prep & Bake - rec3
+
 ```{r}
 rec3_prep <- rec3 %>%
 prep() %>%
@@ -235,6 +239,8 @@ step_stem(text) %>%
 step_tfidf(text)
 ```
 
+### Prep & Bake - rec4
+
 ```{r}
 rec4_prep <- rec4 %>%
 prep() %>%
@@ -244,6 +250,8 @@ recipes::bake(new_data = NULL)
 # 6. Build Resamples
 
 I chose the v-fold-cross-validation as it is rather time-efficient. Other resampling methods are for example bootstrapping, leave-one-out-cross-validation or hold-out-cross-validation.
+
+For the training I have used v = 2 and repeats = 1. The advantage is, you can train the dataset without such a long calculation time.
 
 ```{r}
 folds <- vfold_cv(data = d_train,
@@ -264,7 +272,7 @@ lambda_grid <- grid_regular(penalty(), levels = 25)
 
 ## 8.2 Lasso-L1 With TF-IDF
 
-According to the large amount of data, I decided to not run the Null Model and the L1-TF-IDF with rec1.
+According to the large amount of data, I decided to not run the `Null Model` and the `L1-TF-IDF with rec1`.
 
 ## 8.3 Ridge-Regression-L2 With TF-IDF
 
@@ -316,7 +324,7 @@ l2_83_wf_fit_preds %>%
   autoplot()
 ```
 
-> There is a small difference between both repetitions, especially in the area of sensitivity = 0.75.
+> There is a small difference between both repetitions.
 
 ### Select The Best
 
@@ -333,11 +341,9 @@ chosen_auc_l2_83_wf_fit
 ppv(l2_83_wf_fit_preds, truth = factor(c1), estimate = .pred_class)
 ```
 
-> So this model has an estimated ppv of 64,2 %.
-
 ## 8.4 Lasso-L1 With Word Embeddings
 
-Like the null model, 8.1 and the L1 with TF-IDF, 8.2 I decided to kick them out of the analysis. Unfortunatly I had to the complexity was too high, so R could not take the amount of Data.
+Like the `Null Model` (8.1) and the `L1 with TF-IDF` (8.2) I decided to kick the `L1 with Word Embeddings` out of the analysis, because the results in the training phase were too poor, to use it in the prediction phase.
 
 ## 8.5 Ridge-Regression-L2 with TF-IDF
 
@@ -389,8 +395,6 @@ l2_85_wf_fit_preds %>%
   autoplot()
 ```
 
-> There is almost no discernible difference between the two repetitions.
-
 ### Select The Best
 
 ```{r}
@@ -410,8 +414,6 @@ conf_mat_resampled(l2_85_wf_fit, tidy = FALSE, parameter = select_best(l2_85_wf_
 ```{r}
 ppv(l2_85_wf_fit_preds, truth = factor(c1), estimate = .pred_class)
 ```
-
-> So this model has an estimated ppv of 65,3 %, so it is a little bit better than the model before.
 
 ## 8.6 Lasso-L1 With TF-IDF
 
@@ -487,8 +489,6 @@ chosen_auc_l1_86_wf_fit
 ppv(l1_86_wf_fit_preds, truth = factor(c1), estimate = .pred_class)
 ```
 
-> The L1-TF-IDF model is until now the best model with a ppv of 65,5 %.
-
 ## 8.7 Ridge-Regression-L2 With TF-IDF
 
 ### L2-Model
@@ -558,8 +558,6 @@ conf_mat_resampled(l2_87_wf_fit, tidy = FALSE, parameter = select_best(l2_87_wf_
 ```{r}
 ppv(l2_87_wf_fit_preds, truth = factor(c1), estimate = .pred_class)
 ```
-
-> So this model has an estimated ppv of 67,6 %. So this one is the best model of all.
 
 # 9. Predictions
 
