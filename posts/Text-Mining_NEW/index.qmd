@@ -17,7 +17,7 @@ The picture to this post from the welcome page, is from <a href="https://pixabay
 
 ## 1.2 Definition of Hate Speech
 
-United Nations defines hate speech as: "***any kind of communication** in speech, writing or behaviour, that **attacks** or uses **pejorative** or **discriminatory** language with reference to a person or a group on the basis of **who they are**, in other words, based on their religion, ethnicity, nationality, race, colour, descent, gender or other identity factor."*
+The [United Nations](https://www.un.org/en/hate-speech/understanding-hate-speech/what-is-hate-speech) defines hate speech as: "***any kind of communication** in speech, writing or behaviour, that **attacks** or uses **pejorative** or **discriminatory** language with reference to a person or a group on the basis of **who they are**, in other words, based on their religion, ethnicity, nationality, race, colour, descent, gender or other identity factor."*
 
 The problem about hate speech is, that there is no universal definition that can be used.
 
