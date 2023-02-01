@@ -7,12 +7,21 @@ bibliography: ref.bib
 image: "image_solution.png"
 ---
 
-# 1. Preliminary Note
+# 1. Preliminary Note & Definition
 
-For this analysis we use the dataset from @data/0B5VML_2019 out of the zip archive @data/0B5VML/XIUWJ7_2019. The data are licensed according to Attribution 4.0 
-International (CC-BY-4.0). The used word embeddings are from @grave2018learning. The data are licensed according to Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0).
+## 1.1 Preliminary Note
 
-The picture to this post from the welcome page, is from <a href="https://pixabay.com/de/users/talhakhalil007-5671515/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4271251">talha khalil</a> auf <a href="https://pixabay.com/de//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4271251">Pixabay</a>
+For this analysis we use the dataset from @data/0B5VML_2019 out of the zip archive @data/0B5VML/XIUWJ7_2019. The data are licensed according to Attribution 4.0 International (CC-BY-4.0).
+
+The picture to this post from the welcome page, is from <a href="https://pixabay.com/de/users/talhakhalil007-5671515/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4271251">talha khalil</a> at <a href="https://pixabay.com/de//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4271251">Pixabay</a>
+
+## 1.2 Definition of Hate Speech
+
+The [United Nations](https://www.un.org/en/hate-speech/understanding-hate-speech/what-is-hate-speech) defines hate speech as: "***any kind of communication** in speech, writing or behaviour, that **attacks** or uses **pejorative** or **discriminatory** language with reference to a person or a group on the basis of **who they are**, in other words, based on their religion, ethnicity, nationality, race, colour, descent, gender or other identity factor."*
+
+The problem about hate speech is, that there is no universal definition that can be used.
+
+So our research question is, if there is any possibility to predict hate speech by using tweets and how well is the prediction?
 
 # 2. Load The Packages
 
@@ -75,6 +84,8 @@ select(id, everything())
 
 # 4. Insert The Predefined List
 
+The used word embeddings are from @grave2018learning. The data are licensed according to Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0).
+
 ```{r}
 out_file_model <- "C:/Users/sapi-/OneDrive - Hochschule für Angewandte Wissenschaften Ansbach/Desktop/AWM/angewandte Wirtschats- und Medienpsychologie/5. Semester/Word_Embedding/de.300.bin"
 ```
@@ -124,6 +135,7 @@ source("C:/Users/sapi-/OneDrive/Studium/5. Semester/Data Science II/Data_Science
 ```
 
 # 6. Define Recipe - rec4 - TF-IDF
+
 ```{r}
 rec4 <-
 recipe(c1 ~., data = select(d_train, text, c1, id)) %>%
@@ -161,7 +173,7 @@ strata = c1)
 lambda_grid <- grid_regular(penalty(), levels = 25)
 ```
 
-## 9. Lasso-L1 With TF-IDF
+# 9. Lasso-L1 With TF-IDF
 
 ### L1-Model
 
@@ -185,14 +197,12 @@ l1_86_wf
 
 ```{r}
 options(mc.cores = parallel::detectCores())
-tic()
 l1_86_wf_fit <- tune_grid(
 l1_86_wf,
 folds,
 grid = lambda_grid,
 control = control_resamples(save_pred = TRUE)
 )
-toc()
 ```
 
 ### Model Performance
@@ -222,6 +232,83 @@ select_by_one_std_err(metric = "roc_auc", -penalty)
 chosen_auc_l1_86_wf_fit
 ```
 
+# 10. Predictions
 
+## Finalize The Workflow
 
+```{r}
+l1_86_wf_final <- 
+  l1_86_wf %>% 
+  finalize_workflow(select_best(l1_86_wf_fit, metric = "roc_auc"))
+```
 
+## Adaptation Of The Finished Workflow To The Training Dataset
+
+```{r}
+options(mc.cores = parallel::detectCores())
+fit_train <- l1_86_wf_final %>% 
+  fit(d_train)
+```
+
+## Adapt The Predictions To The Test Dataset
+
+```{r}
+fit_test <- fit_train %>% 
+  predict(d_test)
+```
+
+# 11. Check The Predictions
+
+## Add ID Column
+
+```{r}
+fit_test <- fit_test %>% 
+  mutate(id = row_number())
+```
+
+## Join Both Datasets
+
+```{r}
+test <- fit_test %>% 
+  full_join(d_test, by = "id")
+```
+
+```{r}
+test <- test%>% 
+  select(id, text, c1, c2, .pred_class)
+```
+
+## Test The Predictions
+
+```{r}
+test %>% 
+  count(c1, .pred_class)
+```
+
+```{r}
+test %>% 
+  filter(c1 != "OTHER", .pred_class != "OTHER") %>% 
+  nrow()/nrow(test)
+```
+
+### Accuracy
+
+```{r}
+accuracy(test, truth = factor(c1), estimate = .pred_class)
+```
+
+```{r}
+sens(test, truth = factor(c1), estimate = .pred_class)
+```
+
+```{r}
+spec(test, truth = factor(c1), estimate = .pred_class)
+```
+
+# 12. Research Question
+
+Now we have to clear the research question, it there is any possibility to predict hate speech by using tweets and how well is the prediction?
+
+1.  Yes, we can predict hate speech!
+2.  This shows us the computed accuracy, which is 71,5 %!
+    1.  It also shows us, that we have 92 % specificity. This means the predictions is correct to the already classified data (c1). The specificity is the confirmation security.
