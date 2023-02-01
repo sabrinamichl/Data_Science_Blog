@@ -4,6 +4,7 @@ author: "Harlow Malloc"
 date: "2023-01-24"
 categories: [news, code, analysis]
 image: "image.jpg"
+bibliography: ref.bib
 ---
 
 This is a post with executable code.
