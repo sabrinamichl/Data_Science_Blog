@@ -291,7 +291,7 @@
     "href": "posts/Text-Mining_Solutions/index.html",
     "title": "Text Mining Solution",
     "section": "",
-    "text": "For this analysis we use the dataset from Wiegand (2019a) out of the zip archive Wiegand (2019b). The data are licensed according to Attribution 4.0 International (CC-BY-4.0).\nThe picture to this post from the welcome page, is from talha khalil at Pixabay\n\n\n\nThe United Nations defines hate speech as: “any kind of communication in speech, writing or behaviour, that attacks or uses pejorative or discriminatory language with reference to a person or a group on the basis of who they are, in other words, based on their religion, ethnicity, nationality, race, colour, descent, gender or other identity factor.”\nThe problem about hate speech is, that there is no universal definition that can be used.\nSo our research question is, if there is any possibility to predict hate speech by using tweets and how well is the prediction?"
+    "text": "For this analysis we use the dataset from Wiegand (2019a) out of the zip archive Wiegand (2019b). The data are licensed according to Attribution 4.0 International (CC-BY-4.0).\nThe welcome page picture, to this post is from talha khalil at Pixabay\n\n\n\nThe United Nations defines hate speech as: “any kind of communication in speech, writing or behaviour, that attacks or uses pejorative or discriminatory language with reference to a person or a group on the basis of who they are, in other words, based on their religion, ethnicity, nationality, race, colour, descent, gender or other identity factor.”\nThe problem about hate speech is, that there is no universal definition that can be used.\nSo our research question is, if there is any possibility to predict hate speech by using tweets and how well is the prediction?"
   },
   {
     "objectID": "posts/Text-Mining_Solutions/index.html#train-dataset",
@@ -347,13 +347,13 @@
     "href": "posts/Text-Mining_Solutions/index.html#join-both-datasets",
     "title": "Text Mining Solution",
     "section": "Join Both Datasets",
-    "text": "Join Both Datasets\n\ntest <- fit_test %>% \n  full_join(d_test, by = \"id\")\n\n\ntest <- test%>% \n  select(id, text, c1, c2, .pred_class)"
+    "text": "Join Both Datasets\n\ntest <- fit_test %>% \n  full_join(d_test, by = \"id\")\n\n\ntest <- test %>% \n  select(id, text, c1, c2, .pred_class)"
   },
   {
     "objectID": "posts/Text-Mining_Solutions/index.html#test-the-predictions",
     "href": "posts/Text-Mining_Solutions/index.html#test-the-predictions",
     "title": "Text Mining Solution",
     "section": "Test The Predictions",
-    "text": "Test The Predictions\n\ntest %>% \n  count(c1, .pred_class)\n\n# A tibble: 4 x 3\n  c1      .pred_class     n\n  <chr>   <fct>       <int>\n1 OFFENSE OFFENSE       237\n2 OFFENSE OTHER         521\n3 OTHER   OFFENSE       113\n4 OTHER   OTHER        1357\n\n\n\ntest %>% \n  filter(c1 != \"OTHER\", .pred_class != \"OTHER\") %>% \n  nrow()/nrow(test)\n\n[1] 0.1063734\n\n\n\nAccuracy\n\naccuracy(test, truth = factor(c1), estimate = .pred_class)\n\n# A tibble: 1 x 3\n  .metric  .estimator .estimate\n  <chr>    <chr>          <dbl>\n1 accuracy binary         0.715\n\n\n\nsens(test, truth = factor(c1), estimate = .pred_class)\n\n# A tibble: 1 x 3\n  .metric .estimator .estimate\n  <chr>   <chr>          <dbl>\n1 sens    binary         0.313\n\n\n\nspec(test, truth = factor(c1), estimate = .pred_class)\n\n# A tibble: 1 x 3\n  .metric .estimator .estimate\n  <chr>   <chr>          <dbl>\n1 spec    binary         0.923"
+    "text": "Test The Predictions\n\ntest %>% \n  count(c1, .pred_class)\n\n# A tibble: 4 x 3\n  c1      .pred_class     n\n  <chr>   <fct>       <int>\n1 OFFENSE OFFENSE       237\n2 OFFENSE OTHER         521\n3 OTHER   OFFENSE       113\n4 OTHER   OTHER        1357\n\n\n\ntest %>% \n  filter(c1 == \"OTHER\", .pred_class == \"OTHER\") %>% \n  nrow/nrow(test)\n\n[1] 0.6090664\n\n\n\ntest %>% \n  filter(c1 == \"OFFENSE\", .pred_class == \"OFFENSE\") %>% \n  nrow/nrow(test)\n\n[1] 0.1063734\n\n\n\nThe table shows us how the predictions .pred_class match the actual classified data c1.\nSo we see, that 237 OFFENSE (10,6 %) tweets are actually predicted to be OFFENSE and that 1357 (60,9 %) OTHER classified tweets are predicted to be OTHER.\nOnly 634 tweets were not predicted correctly.\n\nAccuracy\n\naccuracy(test, truth = factor(c1), estimate = .pred_class)\n\n# A tibble: 1 x 3\n  .metric  .estimator .estimate\n  <chr>    <chr>          <dbl>\n1 accuracy binary         0.715\n\n\n\nsens(test, truth = factor(c1), estimate = .pred_class)\n\n# A tibble: 1 x 3\n  .metric .estimator .estimate\n  <chr>   <chr>          <dbl>\n1 sens    binary         0.313\n\n\n\nspec(test, truth = factor(c1), estimate = .pred_class)\n\n# A tibble: 1 x 3\n  .metric .estimator .estimate\n  <chr>   <chr>          <dbl>\n1 spec    binary         0.923"
   }
 ]

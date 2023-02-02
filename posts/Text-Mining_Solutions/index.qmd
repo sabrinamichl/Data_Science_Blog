@@ -13,7 +13,7 @@ image: "image_solution.png"
 
 For this analysis we use the dataset from @data/0B5VML_2019 out of the zip archive @data/0B5VML/XIUWJ7_2019. The data are licensed according to Attribution 4.0 International (CC-BY-4.0).
 
-The picture to this post from the welcome page, is from <a href="https://pixabay.com/de/users/talhakhalil007-5671515/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4271251">talha khalil</a> at <a href="https://pixabay.com/de//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4271251">Pixabay</a>
+The welcome page picture, to this post is from <a href="https://pixabay.com/de/users/talhakhalil007-5671515/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4271251">talha khalil</a> at <a href="https://pixabay.com/de//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=4271251">Pixabay</a>
 
 ## 1.2 Definition of Hate Speech
 
@@ -82,7 +82,7 @@ mutate(id = row_number()) %>%
 select(id, everything())
 ```
 
-# 4. Insert The Predefined List
+# 4. Insert The Predefined Word Embedding List
 
 The used word embeddings are from @grave2018learning. The data are licensed according to Attribution-ShareAlike 3.0 Unported (CC-BY-SA 3.0).
 
@@ -174,6 +174,8 @@ lambda_grid <- grid_regular(penalty(), levels = 25)
 ```
 
 # 9. Lasso-L1 With TF-IDF
+
+We take only the best model from the \[analysis\](https://world-of-datascience.netlify.app/posts/text-mining_new/)
 
 ### L1-Model
 
@@ -274,7 +276,7 @@ test <- fit_test %>%
 ```
 
 ```{r}
-test <- test%>% 
+test <- test %>% 
   select(id, text, c1, c2, .pred_class)
 ```
 
@@ -287,11 +289,23 @@ test %>%
 
 ```{r}
 test %>% 
-  filter(c1 != "OTHER", .pred_class != "OTHER") %>% 
-  nrow()/nrow(test)
+  filter(c1 == "OTHER", .pred_class == "OTHER") %>% 
+  nrow/nrow(test)
 ```
 
-### Accuracy
+```{r}
+test %>% 
+  filter(c1 == "OFFENSE", .pred_class == "OFFENSE") %>% 
+  nrow/nrow(test)
+```
+
+> The table shows us how the predictions `.pred_class` match the actual classified data `c1`.
+>
+> So we see, that 237 OFFENSE (10,6 %) tweets are actually predicted to be OFFENSE and that 1357 (60,9 %) OTHER classified tweets are predicted to be OTHER.
+>
+> Only 634 tweets were not predicted correctly.
+
+Accuracy
 
 ```{r}
 accuracy(test, truth = factor(c1), estimate = .pred_class)
@@ -309,6 +323,5 @@ spec(test, truth = factor(c1), estimate = .pred_class)
 
 Now we have to clear the research question, it there is any possibility to predict hate speech by using tweets and how well is the prediction?
 
-1.  Yes, we can predict hate speech!
-2.  This shows us the computed accuracy, which is 71,5 %!
-    1.  It also shows us, that we have 92 % specificity. This means the predictions is correct to the already classified data (c1). The specificity is the confirmation security.
+1.  Yes, we can predict hate speech with tweets!
+2.  The accuracy (71,5 %) shows us, how well the prediction is!
